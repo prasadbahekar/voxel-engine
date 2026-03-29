@@ -25,34 +25,52 @@ controls.enableDamping = true;
 
 // ! TERRAIN START ! //
 
-const blockSize = 1;
-const worldSize = 20;
+const CHUNK_SIZE = 16;
+const RENDER_DISTANCE = 1;
 
-const geometry = new THREE.BoxGeometry(blockSize, blockSize, blockSize);
+const chunks = {};
+
+const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshStandardMaterial({ color: 0x55aa55 });
-
 const noise2D = createNoise2D();
 
-for (let x = -worldSize / 2; x < worldSize / 2; x++) {
-  for (let z = -worldSize / 2; z < worldSize / 2; z++) {
+function createChunk(chunkX, chunkZ) {
+  const group = new THREE.Group();
+  const key = `${chunkX},${chunkZ}`;
+  if (chunks[key]) return;
 
-    const height = Math.floor(
-      (noise2D(x * 0.05, z * 0.05) + 2) * 5
-    );
+  for (let x = 0; x < CHUNK_SIZE; x++) {
+    for (let z = 0; z < CHUNK_SIZE; z++) {
 
-    for (let y = 0; y < height; y++) {
-        let color;
-        if (y < height - (Math.round(Math.random()) + 4))
-        { color = 0x757575; } else
-        if (y < height - 1) 
-        { color = 0x8B4513; } else 
-        { color = 0x10dd00; }
+      const worldX = chunkX * CHUNK_SIZE + x;
+      const worldZ = chunkZ * CHUNK_SIZE + z;
 
-        const material = new THREE.MeshStandardMaterial({ color });
+      console.log(worldX, worldZ)
+
+      const height = Math.floor(
+        (noise2D(worldX * 0.05, worldZ * 0.05) + 2) * 5
+      );
+
+      for (let y = 0; y < height; y++) {
         const cube = new THREE.Mesh(geometry, material);
-        cube.position.set(x, y, z);
-        scene.add(cube);
+        cube.position.set(worldX, y, worldZ);
+        group.add(cube);
+      }
     }
+  }
+
+  scene.add(group);
+  return group;
+}
+
+function getChunkCoord(pos) {
+  return Math.floor(pos / CHUNK_SIZE);
+}
+
+// INITIALIZE WORLD
+for (let x = -RENDER_DISTANCE; x <= RENDER_DISTANCE; x++) {
+  for (let z = -RENDER_DISTANCE; z <= RENDER_DISTANCE; z++) {
+    createChunk(x, z);
   }
 }
 
