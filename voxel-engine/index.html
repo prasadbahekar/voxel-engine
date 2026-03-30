@@ -6,6 +6,20 @@
     <title>Voxel Engine</title>
 </head>
 <body style="margin: 0;">
+    <div id="stats" style="
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        color: white;
+        background: rgba(0,0,0,0.5);
+        padding: 10px;
+        font-family: monospace;
+        z-index: 100;">
+        Blocks: <span id="blocks">0</span><br>
+        <span id="cords">0 0 0</span><br>
+        Colliding: <span id="colliding">0 0 0</span><br>
+        F&R: <span id="fr">0 0</span><br>
+    </div>
     <script src="./src/js/script.js" type="module"></script>
 </body>
 </html>
