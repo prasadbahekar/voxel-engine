@@ -102,16 +102,54 @@ function createChunk(chunkX, chunkZ) {
   return group;
 }
 
+function updateChunks() {
+  const playerChunk = getPlayerChunk();
+  const neededChunks = {};
+
+  for (let x = -RENDER_DISTANCE; x <= RENDER_DISTANCE; x++) {
+    for (let z = -RENDER_DISTANCE; z <= RENDER_DISTANCE; z++) {
+
+      const chunkX = playerChunk.x + x;
+      const chunkZ = playerChunk.z + z;
+
+      const key = `${chunkX},${chunkZ}`;
+      neededChunks[key] = true;
+
+      if (!chunks[key]) {
+        const chunk = createChunk(chunkX, chunkZ);
+        chunks[key] = chunk;
+      }
+    }
+  }
+
+  for (const key in chunks) {
+    if (!neededChunks[key]) {
+      scene.remove(chunks[key]);
+      delete chunks[key];
+    }
+  }
+}
+
+function getPlayerChunk() {
+  const pos = controls.object.position;
+
+  return {
+    x: getChunkCoord(pos.x),
+    z: getChunkCoord(pos.z)
+  };
+}
+
 function getChunkCoord(pos) {
   return Math.floor(pos / CHUNK_SIZE);
 }
 
 // INITIALIZE WORLD
-for (let x = -RENDER_DISTANCE; x <= RENDER_DISTANCE; x++) {
-  for (let z = -RENDER_DISTANCE; z <= RENDER_DISTANCE; z++) {
-    createChunk(x, z);
-  }
-}
+// for (let x = -RENDER_DISTANCE; x <= RENDER_DISTANCE; x++) {
+//   for (let z = -RENDER_DISTANCE; z <= RENDER_DISTANCE; z++) {
+//     const key = `${x},${z}`;
+//     chunks[key] = createChunk(x, z);
+//   }
+// }
 
 // ! TERRAIN END ! //
 
@@ -132,6 +170,7 @@ function animate() {
     stats.begin()
     controls.update()
     updateMovement()
+    updateChunks()
     renderer.render(scene, camera);
     stats.end();
 }
