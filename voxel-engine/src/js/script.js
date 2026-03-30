@@ -11,6 +11,9 @@ document.body.appendChild(stats.dom);
 // Scene
 const scene = new THREE.Scene();
 
+// Clock
+const timer = new THREE.Timer();
+
 // Camera
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.z = 50;
@@ -26,6 +29,13 @@ const controls = new PointerLockControls(camera, document.body);
 document.addEventListener('click', () => {
   controls.lock();
 });
+
+// Handle Delta
+function updateTimer() {
+  timer.update()
+  let delta = timer.getDelta();
+  delta = Math.min(delta, 0.05);
+}
 
 // Keys Handler
 const keys = {};
@@ -53,15 +63,15 @@ let player = {
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 
-const speed = 0.1;
-const gravity = -0.01;
+const speed = 5;
+const gravity = -0.5;
 const stepSize = 0.1;
 const player_offset = new THREE.Vector3(0, -1.6, 0);
 
-function updateMovement() {
+function updateMovement(delta) {
   const forward = new THREE.Vector3();
   camera.getWorldDirection(forward);
-  velocity.y += gravity;
+  velocity.y += gravity * delta;
 
   forward.y = 0;
   forward.normalize();
@@ -73,7 +83,7 @@ function updateMovement() {
 
   if (isOnGround()) {
     velocity.y = 0;
-    if (keys["space"]) velocity.y += 0.15;
+    if (keys["space"]) velocity.y = 0.16;
   }
 
   velocity.x = 0;
@@ -104,6 +114,9 @@ function updateMovement() {
     velocity.x = (velocity.x / len) * speed;
     velocity.z = (velocity.z / len) * speed;
   }
+
+  velocity.x *= delta
+  velocity.z *= delta
 
   move()
 
@@ -309,7 +322,7 @@ function isBlockSolid(x, y, z) {
 // ! TERRAIN END ! //
 
 // Light
-const light = new THREE.DirectionalLight(0xffffff, 1);
+const light = new THREE.DirectionalLight(0xffffff, 0.7);
 light.position.set(5, 5, 5);
 scene.add(light);
 
@@ -327,9 +340,10 @@ scene.add(ambient);
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
+    updateTimer()
     stats.begin()
     controls.update()
-    updateMovement()
+    updateMovement(delta)
     updateChunks()
     renderer.render(scene, camera);
     stats.end();
