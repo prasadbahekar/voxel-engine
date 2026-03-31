@@ -1,31 +1,36 @@
 import { isOnGround, isColliding } from './collision.js';
 import * as THREE from 'three';
-import { camera } from '../core/scene.js';
+import { camera, updateCameraFOV, cameraNormalFOV } from '../core/scene.js';
 import { keys } from '../core/input.js';
 import { controls } from '../core/controls.js';
 import { delta } from '../core/delta.js';
+import { playerHitbox } from './player.js';
 
 const velocity = new THREE.Vector3();
 
-const speed = 4.317;      // blocks per second
-const gravity = -15;      // stronger gravity (feels better)
-const jumpForce = 6;      // jump strength
+let speed = 4.317;
+let state = "walk";
+const WALK_SPEED = 4.317;
+const CROUCH_SPEED = 1.3;
+const SPRINT_SPEED = 5.612;
+const gravity = -15;      
+const jumpForce = 6;      
 const stepSize = 0.1;
 
 export const player_offset = new THREE.Vector3(0, -1.6, 0);
 
 export function updateMovement() {
+  updateState();
+
   const forward = new THREE.Vector3();
   camera.getWorldDirection(forward);
 
-  // remove vertical influence
   forward.y = 0;
   forward.normalize();
 
   const right = new THREE.Vector3();
   right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
 
-  // --- INPUT DIRECTION ---
   let moveX = 0;
   let moveZ = 0;
 
@@ -46,7 +51,7 @@ export function updateMovement() {
     moveZ -= right.z;
   }
 
-  // normalize movement (prevents diagonal speed boost)
+  // normalize
   const len = Math.hypot(moveX, moveZ);
   if (len > 0) {
     moveX = (moveX / len) * speed;
@@ -56,10 +61,8 @@ export function updateMovement() {
   velocity.x = moveX;
   velocity.z = moveZ;
 
-  // --- GRAVITY ---
   velocity.y += gravity * delta;
 
-  // --- GROUND CHECK ---
   if (isOnGround()) {
     if (velocity.y < 0) velocity.y = 0;
 
@@ -68,7 +71,6 @@ export function updateMovement() {
     }
   }
 
-  // --- APPLY DELTA (convert to per-frame movement) ---
   const frameVelocity = new THREE.Vector3(
     velocity.x * delta,
     velocity.y * delta,
@@ -77,7 +79,6 @@ export function updateMovement() {
 
   move(frameVelocity);
 
-  // debug UI
   document.getElementById("cords").textContent =
     `${camera.position.x.toFixed(2)} ${(camera.position.y + player_offset.y).toFixed(2)} ${camera.position.z.toFixed(2)}`;
 }
@@ -111,5 +112,30 @@ function move(v) {
     if (isColliding()) {
       pos.z -= dz;
     }
+  }
+}
+
+function updateState() {
+  // Detect State
+  state = "walk";
+  if (keys["shiftright"]) {
+    state = "crouch";
+  } else if (keys["controlright"]) {
+    state = "sprint";
+  }
+
+  // Update Values
+  if (state == "walk") {
+    speed = WALK_SPEED;
+    updateCameraFOV(cameraNormalFOV)
+    playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6))
+  } else if (state == "crouch") {
+    speed = CROUCH_SPEED;
+    updateCameraFOV(cameraNormalFOV)
+    playerHitbox.updateSize(new THREE.Vector3(0.6, 1.5, 0.6))
+  } else if (state == "sprint") {
+    speed = SPRINT_SPEED;
+    updateCameraFOV(cameraNormalFOV + cameraNormalFOV * 0.15);
+    playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6))
   }
 }

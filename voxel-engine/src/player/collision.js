@@ -1,30 +1,18 @@
 import { camera } from '../core/scene.js';
 import { player_offset } from './movement.js';
-import { player } from './player.js';
+import { player, playerHitbox } from './player.js';
 import { chunks, getChunkCoord } from '../world/chunks.js';
 
 export function isColliding () {
   const x = camera.position.x
   const y = camera.position.y + player_offset.y
   const z = camera.position.z
-  const halfWidth = player.width / 2;
-  const halfHeight = player.height / 2;
-  
 
-  if (
-    isBlockSolid(x - halfWidth, y, z - halfWidth) ||
-    isBlockSolid(x + halfWidth, y, z - halfWidth) ||
-    isBlockSolid(x - halfWidth, y, z + halfWidth) ||
-    isBlockSolid(x + halfWidth, y, z + halfWidth) ||
-    isBlockSolid(x - halfWidth, y + halfHeight, z - halfWidth) ||
-    isBlockSolid(x + halfWidth, y + halfHeight, z - halfWidth) ||
-    isBlockSolid(x - halfWidth, y + halfHeight, z + halfWidth) ||
-    isBlockSolid(x + halfWidth, y + halfHeight, z + halfWidth) ||
-    isBlockSolid(x - halfWidth, y + halfHeight * 2, z - halfWidth) ||
-    isBlockSolid(x + halfWidth, y + halfHeight * 2, z - halfWidth) ||
-    isBlockSolid(x - halfWidth, y + halfHeight * 2, z + halfWidth) ||
-    isBlockSolid(x + halfWidth, y + halfHeight * 2, z + halfWidth)
-  ) return true;
+  for (const offset of playerHitbox.hitboxOffset) {
+    if (isBlockSolid(x + offset.x, y + offset.y, z + offset.z)) {
+      return true;
+    }
+  }
 
   return false;
 }
