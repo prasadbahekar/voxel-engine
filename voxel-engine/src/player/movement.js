@@ -4,86 +4,95 @@ import { camera } from '../core/scene.js';
 import { keys } from '../core/input.js';
 import { controls } from '../core/controls.js';
 import { delta } from '../core/delta.js';
-import { cos } from 'three/src/nodes/math/MathNode.js';
 
 const velocity = new THREE.Vector3();
-const speed = 5;
-const gravity = -0.5;
+
+const speed = 4.317;      // blocks per second
+const gravity = -15;      // stronger gravity (feels better)
+const jumpForce = 6;      // jump strength
 const stepSize = 0.1;
+
 export const player_offset = new THREE.Vector3(0, -1.6, 0);
 
 export function updateMovement() {
   const forward = new THREE.Vector3();
   camera.getWorldDirection(forward);
-  velocity.y += gravity * delta;
-  console.log(delta);
 
+  // remove vertical influence
   forward.y = 0;
   forward.normalize();
-  forward.multiplyScalar(speed)
 
   const right = new THREE.Vector3();
   right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
-  right.multiplyScalar(speed)
 
-  if (isOnGround()) {
-    velocity.y = 0;
-    if (keys["space"]) velocity.y = 0.16;
-  }
-
-  velocity.x = 0;
-  velocity.z = 0;
+  // --- INPUT DIRECTION ---
+  let moveX = 0;
+  let moveZ = 0;
 
   if (keys["arrowup"]) {
-    velocity.x += forward.x;
-    velocity.z += forward.z;
+    moveX += forward.x;
+    moveZ += forward.z;
   }
-
   if (keys["arrowdown"]) {
-    velocity.x -= forward.x;
-    velocity.z -= forward.z;
+    moveX -= forward.x;
+    moveZ -= forward.z;
   }
-
   if (keys["arrowright"]) {
-    velocity.x += right.x;
-    velocity.z += right.z;
+    moveX += right.x;
+    moveZ += right.z;
   }
-
   if (keys["arrowleft"]) {
-    velocity.x -= right.x;
-    velocity.z -= right.z;
+    moveX -= right.x;
+    moveZ -= right.z;
   }
 
-  const len = Math.hypot(velocity.x, velocity.z);
+  // normalize movement (prevents diagonal speed boost)
+  const len = Math.hypot(moveX, moveZ);
   if (len > 0) {
-    velocity.x = (velocity.x / len) * speed;
-    velocity.z = (velocity.z / len) * speed;
+    moveX = (moveX / len) * speed;
+    moveZ = (moveZ / len) * speed;
   }
 
-  velocity.x *= delta
-  velocity.z *= delta
+  velocity.x = moveX;
+  velocity.z = moveZ;
 
-  move()
+  // --- GRAVITY ---
+  velocity.y += gravity * delta;
 
-  const pos = controls.object.position;
-//   camera.position.copy(pos).add(player_offset);
-  document.getElementById("cords").textContent = `${camera.position.x.toFixed(2)} ${camera.position.y.toFixed(2)} ${camera.position.z.toFixed(2)}`;
-  document.getElementById("colliding").textContent = `${isColliding(camera.position.x, camera.position.y, camera.position.z) ? "true" : "false"}`;
-  document.getElementById("fr").textContent = `${forward.x.toFixed(2)} ${right.x.toFixed(2)}`;
+  // --- GROUND CHECK ---
+  if (isOnGround()) {
+    if (velocity.y < 0) velocity.y = 0;
+
+    if (keys["space"]) {
+      velocity.y = jumpForce;
+    }
+  }
+
+  // --- APPLY DELTA (convert to per-frame movement) ---
+  const frameVelocity = new THREE.Vector3(
+    velocity.x * delta,
+    velocity.y * delta,
+    velocity.z * delta
+  );
+
+  move(frameVelocity);
+
+  // debug UI
+  document.getElementById("cords").textContent =
+    `${camera.position.x.toFixed(2)} ${(camera.position.y + player_offset.y).toFixed(2)} ${camera.position.z.toFixed(2)}`;
 }
 
-function move() {
+function move(v) {
   const pos = controls.object.position;
 
-  let dist = velocity.length();
+  let dist = v.length();
   let steps = Math.max(1, Math.ceil(dist / stepSize));
 
-  let dx = velocity.x / steps;
-  let dy = velocity.y / steps;
-  let dz = velocity.z / steps;
+  let dx = v.x / steps;
+  let dy = v.y / steps;
+  let dz = v.z / steps;
 
   for (let i = 0; i < steps; i++) {
-    console.log(velocity.y)
     // Y
     pos.y += dy;
     if (isColliding()) {
@@ -93,10 +102,14 @@ function move() {
 
     // X
     pos.x += dx;
-    if (isColliding()) pos.x -= dx;
+    if (isColliding()) {
+      pos.x -= dx;
+    }
 
     // Z
     pos.z += dz;
-    if (isColliding()) pos.z -= dz;
+    if (isColliding()) {
+      pos.z -= dz;
+    }
   }
 }

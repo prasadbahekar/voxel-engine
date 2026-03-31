@@ -9,7 +9,7 @@ export const chunks = {};
 let blocksOnScreen = 0;
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({ color: 0x55aa55 });
+const material = new THREE.MeshStandardMaterial({ color: 0x55dd55 });
 
 export function createChunk(chunkX, chunkZ) {
   const group = new THREE.Group();

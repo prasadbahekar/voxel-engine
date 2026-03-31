@@ -5,6 +5,10 @@ import { updateChunks } from './world/chunks.js';
 import { initControls } from './core/controls.js';
 import { updateTimer } from './core/delta.js';
 import { initLights } from './world/lighting.js';
+import Stats from 'stats.js';
+
+const stats = new Stats();
+document.body.appendChild(stats.dom);
 
 initScene();
 initControls();
@@ -14,9 +18,11 @@ setupInput();
 function animate() {
   requestAnimationFrame(animate);
 
+  stats.begin();
   updateTimer();
   updatePlayer();
   updateChunks();
+  stats.end();
 
   renderer.render(scene, camera);
 }

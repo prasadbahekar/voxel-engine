@@ -12,6 +12,10 @@ export function isColliding () {
   
 
   if (
+    isBlockSolid(x - halfWidth, y, z - halfWidth) ||
+    isBlockSolid(x + halfWidth, y, z - halfWidth) ||
+    isBlockSolid(x - halfWidth, y, z + halfWidth) ||
+    isBlockSolid(x + halfWidth, y, z + halfWidth) ||
     isBlockSolid(x - halfWidth, y + halfHeight, z - halfWidth) ||
     isBlockSolid(x + halfWidth, y + halfHeight, z - halfWidth) ||
     isBlockSolid(x - halfWidth, y + halfHeight, z + halfWidth) ||
@@ -26,8 +30,9 @@ export function isColliding () {
 }
   
 export function isOnGround() {
+  const EPSILON = 0.01;
   const x = camera.position.x
-  const y = camera.position.y + player_offset.y
+  const y = camera.position.y + player_offset.y - EPSILON
   const z = camera.position.z
   const half = player.width / 2;
 
