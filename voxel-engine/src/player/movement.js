@@ -10,10 +10,18 @@ const velocity = new THREE.Vector3();
 
 let targetFOV = cameraNormalFOV;
 let state = "walk";
-let speed = 4.317;
+
 const WALK_SPEED = 4.317;
 const CROUCH_SPEED = 1.3;
 const SPRINT_SPEED = 5.612;
+let speed = WALK_SPEED;
+
+let targetHeight = 1.6;
+const STAND_HEIGHT = 1.6;
+const CROUCH_HEIGHT = 1.3;
+let currentHeight = STAND_HEIGHT;
+let crouchLerpY = 0;
+
 const gravity = -18;      
 const jumpForce = 6.5;      
 const stepSize = 0.1;
@@ -45,11 +53,20 @@ export function updateVisualizationHitbox () {
 }
 
 export function updateCameras () {
-  if (state == "crouch") {
-    crouchCamera.position.copy(camera.position);
-    crouchCamera.rotation.copy(camera.rotation);
-    crouchCamera.position.y -= 0.3;
+  const crouchAmount = state == "crouch" ? 1 : 0;
+
+  const lerpSpeed = 10;
+  crouchLerpY += (crouchAmount - crouchLerpY) * lerpSpeed * delta;
+
+  crouchCamera.position.copy(camera.position);
+  crouchCamera.rotation.copy(camera.rotation);
+
+  crouchCamera.position.y -= 0.3 * crouchLerpY;
+
+  if (crouchLerpY > 0.01) {
     setCurrentCamera(crouchCamera);
+  } else {
+    setCurrentCamera(camera);
   }
 }
 
@@ -167,16 +184,12 @@ function updateState() {
   // Update Values
   if (state == "walk") {
     speed = WALK_SPEED;
-    setCurrentCamera(camera);
-
   } else if (state == "crouch") {
     speed = CROUCH_SPEED;
     playerHitbox.updateSize(new THREE.Vector3(0.6, 1.5, 0.6));
-
   } else if (state == "sprint") {
     speed = SPRINT_SPEED;
     targetFOV = cameraNormalFOV * 1.1;
-    setCurrentCamera(camera);
   }
 }
 
