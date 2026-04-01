@@ -1,6 +1,6 @@
 import { isOnGround, isColliding } from './collision.js';
 import * as THREE from 'three';
-import { camera, updateCameraFOV, cameraNormalFOV, scene } from '../core/scene.js';
+import { camera, updateCameraFOV, cameraNormalFOV, scene, currentCamera, crouchCamera, setCurrentCamera } from '../core/scene.js';
 import { keys } from '../core/input.js';
 import { controls } from '../core/controls.js';
 import { delta } from '../core/delta.js';
@@ -21,7 +21,13 @@ const hitboxVisualizationOffset = new THREE.Vector3(0, 0, 0);
 const hitboxMeshes = [];
 const hitboxMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-export function initVisualizationHitbox () {
+export let player_offset = new THREE.Vector3(0, -1.6, 0);
+
+export function initPlayer() {
+  initVisualizationHitbox();
+}
+
+function initVisualizationHitbox () {
   playerHitbox.hitboxOffset.forEach(offset => {
       const geometry = new THREE.SphereGeometry(0.05, 8, 8);
       const mesh = new THREE.Mesh(geometry, hitboxMaterial);
@@ -37,10 +43,18 @@ export function updateVisualizationHitbox () {
   });
 }
 
-export const player_offset = new THREE.Vector3(0, -1.6, 0);
+export function updateCameras () {
+  if (state == "crouch") {
+    crouchCamera.position.copy(camera.position);
+    crouchCamera.rotation.copy(camera.rotation);
+    crouchCamera.position.y -= 0.3;
+    setCurrentCamera(crouchCamera);
+  }
+}
 
 export function updateMovement() {
   updateState();
+  updateVisualizationHitbox();
 
   const forward = new THREE.Vector3();
   camera.getWorldDirection(forward);
@@ -145,17 +159,18 @@ function updateState() {
   }
 
   // Update Values
+  playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6));
+  updateCameraFOV(cameraNormalFOV);
+
   if (state == "walk") {
     speed = WALK_SPEED;
-    updateCameraFOV(cameraNormalFOV)
-    playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6))
+    setCurrentCamera(camera);
   } else if (state == "crouch") {
     speed = CROUCH_SPEED;
-    updateCameraFOV(cameraNormalFOV)
-    playerHitbox.updateSize(new THREE.Vector3(0.6, 1.5, 0.6))
+    playerHitbox.updateSize(new THREE.Vector3(0.6, 1.5, 0.6));
   } else if (state == "sprint") {
     speed = SPRINT_SPEED;
     updateCameraFOV(cameraNormalFOV + cameraNormalFOV * 0.15);
-    playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6))
+    setCurrentCamera(camera);
   }
 }

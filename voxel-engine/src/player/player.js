@@ -1,9 +1,9 @@
 import { camera } from '../core/scene.js';
 import { Hitbox } from '../models/hitbox.js';
-import { initVisualizationHitbox, updateMovement } from './movement.js';
+import { updateMovement } from './movement.js';
 import * as THREE from 'three';
 
-export const player = {
+export let player = {
   height: 1.8,
   width: 0.6,
 };

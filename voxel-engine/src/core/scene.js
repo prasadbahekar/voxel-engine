@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 
-export let scene, camera, renderer;
+export let scene, camera, tpvCamera, renderer, crouchCamera;
 export let cameraNormalFOV = 75;
+export let currentCamera;
 
 export function initScene() {
   scene = new THREE.Scene();
@@ -9,9 +10,21 @@ export function initScene() {
   camera = new THREE.PerspectiveCamera(cameraNormalFOV, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 40, 0);
 
+  crouchCamera = new THREE.PerspectiveCamera(cameraNormalFOV, window.innerWidth / window.innerHeight, 0.1, 1000);
+  crouchCamera.position.set(0, 40, 0);
+
+  tpvCamera = new THREE.PerspectiveCamera(cameraNormalFOV, window.innerWidth / window.innerHeight, 0.1, 1000);
+  tpvCamera.position.set(0, 40, 0);
+
+  currentCamera = camera;
+
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
+}
+
+export function setCurrentCamera (newCam) {
+  currentCamera = newCam;
 }
 
 export function updateCameraFOV(newFOV) {
