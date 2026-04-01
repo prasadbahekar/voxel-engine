@@ -1,4 +1,4 @@
-import { camera } from '../core/scene.js';
+import { camera, scene } from '../core/scene.js';
 import { player_offset } from './movement.js';
 import { player, playerHitbox } from './player.js';
 import { chunks, getChunkCoord } from '../world/chunks.js';

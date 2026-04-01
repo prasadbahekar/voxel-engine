@@ -3,13 +3,39 @@ import { camera } from "../core/scene.js";
 import { scene } from "../core/scene.js";
 import * as THREE from 'three';
 
-const CHUNK_SIZE = 16;
+const loader = new THREE.TextureLoader();
+
+loader.load('src/textures/blocks/dirt.png', tex => {
+  console.log("grass top loaded", tex);
+}, undefined, err => {
+  console.error("FAILED to load grass_top", err);
+});
+
+const grassTop = loader.load('src/textures/blocks/grass_top.png');
+const grassSide = loader.load('src/textures/blocks/grass_side.png');
+const dirt = loader.load('src/textures/blocks/dirt.png');
+
+[grassTop, grassSide, dirt].forEach(tex => {
+  tex.magFilter = THREE.NearestFilter;
+  tex.minFilter = THREE.NearestFilter;
+});
+
+const materials = [
+  new THREE.MeshStandardMaterial({ map: grassSide }), // right
+  new THREE.MeshStandardMaterial({ map: grassSide }), // left
+  new THREE.MeshStandardMaterial({ map: grassTop }),  // top
+  new THREE.MeshStandardMaterial({ map: dirt }),      // bottom
+  new THREE.MeshStandardMaterial({ map: grassSide }), // front
+  new THREE.MeshStandardMaterial({ map: grassSide })  // back
+];
+
+const CHUNK_SIZE = 8;
 const RENDER_DISTANCE = 1;
 export const chunks = {};
 let blocksOnScreen = 0;
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({ color: 0x55dd55 });
+const material = materials;
 
 export function createChunk(chunkX, chunkZ) {
   const group = new THREE.Group();

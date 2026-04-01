@@ -1,6 +1,6 @@
 import { camera } from '../core/scene.js';
 import { Hitbox } from '../models/hitbox.js';
-import { updateMovement } from './movement.js';
+import { initVisualizationHitbox, updateMovement } from './movement.js';
 import * as THREE from 'three';
 
 export const player = {

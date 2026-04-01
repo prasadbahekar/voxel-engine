@@ -1,6 +1,6 @@
 import { isOnGround, isColliding } from './collision.js';
 import * as THREE from 'three';
-import { camera, updateCameraFOV, cameraNormalFOV } from '../core/scene.js';
+import { camera, updateCameraFOV, cameraNormalFOV, scene } from '../core/scene.js';
 import { keys } from '../core/input.js';
 import { controls } from '../core/controls.js';
 import { delta } from '../core/delta.js';
@@ -16,6 +16,26 @@ const SPRINT_SPEED = 5.612;
 const gravity = -15;      
 const jumpForce = 6;      
 const stepSize = 0.1;
+
+const hitboxVisualizationOffset = new THREE.Vector3(0, 0, 0);
+const hitboxMeshes = [];
+const hitboxMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+export function initVisualizationHitbox () {
+  playerHitbox.hitboxOffset.forEach(offset => {
+      const geometry = new THREE.SphereGeometry(0.05, 8, 8);
+      const mesh = new THREE.Mesh(geometry, hitboxMaterial);
+      hitboxMeshes.push(mesh);
+      scene.add(mesh);
+  });
+}
+
+export function updateVisualizationHitbox () {
+  const basePosition = camera.position.clone().add(player_offset).add(hitboxVisualizationOffset);
+  hitboxMeshes.forEach((mesh, index) => {
+    mesh.position.copy(playerHitbox.hitboxOffset[index]).add(basePosition);
+  });
+}
 
 export const player_offset = new THREE.Vector3(0, -1.6, 0);
 
