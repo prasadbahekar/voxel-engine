@@ -8,13 +8,13 @@ export function initScene() {
   scene = new THREE.Scene();
 
   camera = new THREE.PerspectiveCamera(cameraNormalFOV, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 40, 0);
+  camera.position.set(0, 15, 0);
 
   crouchCamera = new THREE.PerspectiveCamera(cameraNormalFOV, window.innerWidth / window.innerHeight, 0.1, 1000);
-  crouchCamera.position.set(0, 40, 0);
+  crouchCamera.position.set(0, 15, 0);
 
   tpvCamera = new THREE.PerspectiveCamera(cameraNormalFOV, window.innerWidth / window.innerHeight, 0.1, 1000);
-  tpvCamera.position.set(0, 40, 0);
+  tpvCamera.position.set(0, 15, 0);
 
   currentCamera = camera;
 

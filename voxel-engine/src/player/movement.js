@@ -8,13 +8,14 @@ import { playerHitbox } from './player.js';
 
 const velocity = new THREE.Vector3();
 
-let speed = 4.317;
+let targetFOV = cameraNormalFOV;
 let state = "walk";
+let speed = 4.317;
 const WALK_SPEED = 4.317;
 const CROUCH_SPEED = 1.3;
 const SPRINT_SPEED = 5.612;
-const gravity = -15;      
-const jumpForce = 6;      
+const gravity = -18;      
+const jumpForce = 6.5;      
 const stepSize = 0.1;
 
 const hitboxVisualizationOffset = new THREE.Vector3(0, 0, 0);
@@ -54,6 +55,7 @@ export function updateCameras () {
 
 export function updateMovement() {
   updateState();
+  updateFOV();
   updateVisualizationHitbox();
 
   const forward = new THREE.Vector3();
@@ -158,19 +160,28 @@ function updateState() {
     state = "sprint";
   }
 
-  // Update Values
+  // Default
   playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6));
-  updateCameraFOV(cameraNormalFOV);
+  targetFOV = cameraNormalFOV;
 
+  // Update Values
   if (state == "walk") {
     speed = WALK_SPEED;
     setCurrentCamera(camera);
+
   } else if (state == "crouch") {
     speed = CROUCH_SPEED;
     playerHitbox.updateSize(new THREE.Vector3(0.6, 1.5, 0.6));
+
   } else if (state == "sprint") {
     speed = SPRINT_SPEED;
-    updateCameraFOV(cameraNormalFOV + cameraNormalFOV * 0.15);
+    targetFOV = cameraNormalFOV * 1.1;
     setCurrentCamera(camera);
   }
+}
+
+function updateFOV() {
+  const lerpSpeed = 0.25;
+  camera.fov += (targetFOV - camera.fov) * lerpSpeed;
+  camera.updateProjectionMatrix();
 }
