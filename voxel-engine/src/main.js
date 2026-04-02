@@ -1,10 +1,10 @@
-import { initScene, scene, camera, renderer, currentCamera } from './core/scene.js';
+import { initScene, scene, camera, renderer, currentCamera, updateSky } from './core/scene.js';
 import { setupInput } from './core/input.js';
 import { updatePlayer } from './player/player.js';
 import { updateChunks } from './world/chunks.js';
 import { initControls } from './core/controls.js';
 import { updateTimer } from './core/delta.js';
-import { initLights } from './world/lighting.js';
+import { initSky } from './world/lighting.js';
 import { Hitbox } from './models/hitbox.js';
 import * as THREE from 'three';
 import Stats from 'stats.js';
@@ -15,7 +15,7 @@ document.body.appendChild(stats.dom);
 
 initScene();
 initControls();
-initLights();
+initSky();
 setupInput();
 initPlayer();
 
@@ -25,6 +25,7 @@ function animate() {
 
   stats.begin();
   updateTimer();
+  updateSky();
   updatePlayer();
   updateCameras();
   updateChunks();

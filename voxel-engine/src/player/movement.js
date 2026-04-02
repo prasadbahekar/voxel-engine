@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { camera, updateCameraFOV, cameraNormalFOV, scene, currentCamera, crouchCamera, setCurrentCamera } from '../core/scene.js';
 import { keys } from '../core/input.js';
 import { controls } from '../core/controls.js';
-import { delta } from '../core/delta.js';
+import { delta, ticks } from '../core/delta.js';
 import { playerHitbox } from './player.js';
 
 const velocity = new THREE.Vector3();
@@ -134,6 +134,7 @@ export function updateMovement() {
 
   document.getElementById("cords").textContent =
     `${camera.position.x.toFixed(2)} ${(camera.position.y + player_offset.y).toFixed(2)} ${camera.position.z.toFixed(2)}`;
+  document.getElementById("fr").textContent = `${ticks}`;
 }
 
 function move(v) {
