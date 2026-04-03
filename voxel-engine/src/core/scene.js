@@ -31,6 +31,8 @@ export function initScene() {
 }
 
 export function setCurrentCamera (newCam) {
+  newCam.fov = currentFOV;
+  newCam.updateProjectionMatrix();
   currentCamera = newCam;
 }
 

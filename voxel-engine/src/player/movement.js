@@ -225,7 +225,7 @@ function updateFOV() {
 
   const targetFOV = MIN_FOV + (MAX_FOV - MIN_FOV) * t;
 
-  const lerpSpeed = 0.8;
-  setCameraFOV(currentFOV + (targetFOV - camera.fov) * lerpSpeed);
+  const lerpSpeed = 0.4;
+  setCameraFOV(currentFOV + (targetFOV - currentFOV) * lerpSpeed);
   updateCameraFOV();
 }
