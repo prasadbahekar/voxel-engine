@@ -11,6 +11,9 @@ const velocity = new THREE.Vector3();
 let targetFOV = cameraNormalFOV;
 let state = "walk";
 
+const ACCELERATION = 20;
+const FRICTION = 10;
+
 const WALK_SPEED = 4.317;
 const CROUCH_SPEED = 1.3;
 const SPRINT_SPEED = 5.612;
@@ -111,8 +114,22 @@ export function updateMovement() {
     moveZ = (moveZ / len) * speed;
   }
 
-  velocity.x = moveX;
-  velocity.z = moveZ;
+  // velocity.x += moveX;
+  // velocity.z += moveZ;
+
+  let targetVelX = moveX;
+  let targetVelZ = moveZ;
+
+  if (len > 0) {
+    velocity.x += (targetVelX - velocity.x) * ACCELERATION * delta;
+    velocity.z += (targetVelZ - velocity.z) * ACCELERATION * delta;
+  } else {
+    velocity.x += (0 - velocity.x) * FRICTION * delta;
+    velocity.z += (0 - velocity.z) * FRICTION * delta;
+  }
+
+  if (Math.abs(velocity.x) < 0.01) velocity.x = 0;
+  if (Math.abs(velocity.z) < 0.01) velocity.z = 0;
 
   velocity.y += gravity * delta;
 
