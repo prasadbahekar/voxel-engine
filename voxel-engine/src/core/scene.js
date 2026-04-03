@@ -2,8 +2,9 @@ import * as THREE from 'three';
 import { ticks } from './delta';
 import { updateSun } from '../world/lighting';
 
+export const cameraNormalFOV = 75;
 export let scene, camera, tpvCamera, renderer, crouchCamera;
-export let cameraNormalFOV = 75;
+export let currentFOV = cameraNormalFOV;
 export let currentCamera;
 
 const dayColor = new THREE.Color(0x78A7FF);
@@ -33,11 +34,13 @@ export function setCurrentCamera (newCam) {
   currentCamera = newCam;
 }
 
-export function updateCameraFOV(newFOV) {
-  if (newFOV != camera.fov) {
-    camera.fov = newFOV;
-    camera.updateProjectionMatrix();
-  }
+export function setCameraFOV (fov) {
+  currentFOV = fov;
+}
+
+export function updateCameraFOV() {
+  currentCamera.fov = currentFOV;
+  currentCamera.updateProjectionMatrix();
 }
 
 export function updateSky () {

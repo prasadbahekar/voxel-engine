@@ -1,6 +1,6 @@
 import { isOnGround, isColliding } from './collision.js';
 import * as THREE from 'three';
-import { camera, updateCameraFOV, cameraNormalFOV, scene, currentCamera, crouchCamera, setCurrentCamera } from '../core/scene.js';
+import { camera, updateCameraFOV, cameraNormalFOV, scene, currentCamera, crouchCamera, setCurrentCamera, currentFOV, setCameraFOV } from '../core/scene.js';
 import { keys } from '../core/input.js';
 import { controls } from '../core/controls.js';
 import { delta, ticks } from '../core/delta.js';
@@ -8,7 +8,7 @@ import { playerHitbox } from './player.js';
 
 const velocity = new THREE.Vector3();
 
-let targetFOV = cameraNormalFOV;
+//let targetFOV = cameraNormalFOV;
 let state = "walk";
 
 const ACCELERATION = 20;
@@ -198,7 +198,7 @@ function updateState() {
 
   // Default
   playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6));
-  targetFOV = cameraNormalFOV;
+  //targetFOV = cameraNormalFOV;
 
   // Update Values
   if (state == "walk") {
@@ -208,12 +208,24 @@ function updateState() {
     playerHitbox.updateSize(new THREE.Vector3(0.6, 1.5, 0.6));
   } else if (state == "sprint") {
     speed = SPRINT_SPEED;
-    targetFOV = cameraNormalFOV * 1.1;
+    //targetFOV = cameraNormalFOV * 1.1;
   }
 }
 
 function updateFOV() {
-  const lerpSpeed = 0.25;
-  camera.fov += (targetFOV - camera.fov) * lerpSpeed;
-  camera.updateProjectionMatrix();
+  const MIN_FOV = cameraNormalFOV;
+  const MAX_FOV = cameraNormalFOV * 1.15;
+  const MIN_SPEED = WALK_SPEED;
+  const MAX_SPEED = SPRINT_SPEED;
+  const horizontalSpeed = Math.hypot(velocity.x, velocity.z);
+
+  let t = (horizontalSpeed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED);
+  t = Math.max(0, Math.min(t, 1));
+  t = t * t;
+
+  const targetFOV = MIN_FOV + (MAX_FOV - MIN_FOV) * t;
+
+  const lerpSpeed = 0.8;
+  setCameraFOV(currentFOV + (targetFOV - camera.fov) * lerpSpeed);
+  updateCameraFOV();
 }
