@@ -1,4 +1,4 @@
-import { initScene, scene, camera, renderer, currentCamera, updateSky } from './core/scene.js';
+import { initScene, scene, renderer, currentCamera, updateSky } from './core/scene.js';
 import { setupInput } from './core/input.js';
 import { updatePlayer } from './player/player.js';
 import { updateChunks } from './world/chunks.js';
@@ -11,6 +11,7 @@ import Stats from 'stats.js';
 import { initPlayer, updateCameras, updateVisualizationHitbox } from './player/movement.js';
 
 const stats = new Stats();
+const pixel = new Uint8Array(4);
 document.body.appendChild(stats.dom);
 
 initScene();
