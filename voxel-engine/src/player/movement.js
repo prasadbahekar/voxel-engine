@@ -148,6 +148,8 @@ function move(v) {
   let dz = v.z / steps;
 
   for (let i = 0; i < steps; i++) {
+    const isGround = isOnGround();
+
     // Y
     pos.y += dy;
     if (isColliding()) {
@@ -157,15 +159,14 @@ function move(v) {
 
     // X
     pos.x += dx;
-    if (isColliding()) {
-      pos.x -= dx;
-    }
+    if (isColliding()) pos.x -= dx;
+    if (state == "crouch" && isGround && !isOnGround()) pos.x -= dx;
 
     // Z
     pos.z += dz;
-    if (isColliding()) {
-      pos.z -= dz;
-    }
+    if (isColliding()) pos.z -= dz;
+    if (state == "crouch" && isGround && !isOnGround()) pos.z -= dz;
+    
   }
 }
 
