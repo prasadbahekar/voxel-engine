@@ -1,7 +1,7 @@
 import { getTerrainHeight } from "./terrain.js";
-import { camera } from "../core/scene.js";
 import { scene } from "../core/scene.js";
 import * as THREE from 'three';
+import { player } from "../player/player.js";
 
 const loader = new THREE.TextureLoader();
 
@@ -111,8 +111,8 @@ export function updateChunks() {
 }
 
 export function getPlayerChunk() {
-  const pos = camera.position;
-
+  const pos = player.position;
+  
   return {
     x: getChunkCoord(pos.x),
     z: getChunkCoord(pos.z)

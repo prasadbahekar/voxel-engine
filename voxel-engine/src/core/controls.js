@@ -2,6 +2,7 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 import { camera } from './scene.js';
 import { scene } from './scene.js';
 import * as THREE from 'three';
+import { player } from '../player/player.js';
 
 
 export let controls;

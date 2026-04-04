@@ -1,12 +1,12 @@
 import { camera, scene } from '../core/scene.js';
 import { player_offset } from './movement.js';
-import { player, playerHitbox } from './player.js';
+import { player, player_size, playerHitbox } from './player.js';
 import { chunks, getChunkCoord } from '../world/chunks.js';
 
 export function isColliding () {
-  const x = camera.position.x
-  const y = camera.position.y + player_offset.y
-  const z = camera.position.z
+  const x = player.position.x
+  const y = player.position.y + player_offset.y
+  const z = player.position.z
 
   for (const offset of playerHitbox.hitboxOffset) {
     if (isBlockSolid(x + offset.x, y + offset.y, z + offset.z)) {
@@ -19,10 +19,10 @@ export function isColliding () {
   
 export function isOnGround() {
   const EPSILON = 0.01;
-  const x = camera.position.x
-  const y = camera.position.y + player_offset.y - EPSILON
-  const z = camera.position.z
-  const half = player.width / 2;
+  const x = player.position.x
+  const y = player.position.y + player_offset.y - EPSILON
+  const z = player.position.z
+  const half = player_size.width / 2;
 
   if (
     isBlockSolid(x - half, y, z - half) ||

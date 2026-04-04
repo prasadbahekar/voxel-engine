@@ -4,7 +4,7 @@ import { camera, updateCameraFOV, cameraNormalFOV, scene, currentCamera, crouchC
 import { keys } from '../core/input.js';
 import { controls } from '../core/controls.js';
 import { delta, ticks } from '../core/delta.js';
-import { playerHitbox } from './player.js';
+import { player, playerHitbox } from './player.js';
 
 const velocity = new THREE.Vector3();
 
@@ -35,11 +35,7 @@ const hitboxMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
 export let player_offset = new THREE.Vector3(0, -1.6, 0);
 
-export function initPlayer() {
-  initVisualizationHitbox();
-}
-
-function initVisualizationHitbox () {
+export function initVisualizationHitbox () {
   playerHitbox.hitboxOffset.forEach(offset => {
       const geometry = new THREE.SphereGeometry(0.05, 8, 8);
       const mesh = new THREE.Mesh(geometry, hitboxMaterial);
@@ -49,28 +45,29 @@ function initVisualizationHitbox () {
 }
 
 export function updateVisualizationHitbox () {
-  const basePosition = camera.position.clone().add(player_offset).add(hitboxVisualizationOffset);
+  const basePosition = player.position.clone().add(hitboxVisualizationOffset);
   hitboxMeshes.forEach((mesh, index) => {
     mesh.position.copy(playerHitbox.hitboxOffset[index]).add(basePosition);
   });
 }
 
 export function updateCameras () {
-  const crouchAmount = state == "crouch" ? 1 : 0;
+  // setCurrentCamera(camera);
+  // const crouchAmount = state == "crouch" ? 1 : 0;
 
-  const lerpSpeed = 10;
-  crouchLerpY += (crouchAmount - crouchLerpY) * lerpSpeed * delta;
+  // const lerpSpeed = 10;
+  // crouchLerpY += (crouchAmount - crouchLerpY) * lerpSpeed * delta;
 
-  crouchCamera.position.copy(camera.position);
-  crouchCamera.rotation.copy(camera.rotation);
+  // crouchCamera.position.copy(player.position);
+  // crouchCamera.rotation.copy(player.rotation);
 
-  crouchCamera.position.y -= 0.3 * crouchLerpY;
+  // crouchCamera.position.y -= 0.3 * crouchLerpY;
 
-  if (crouchLerpY > 0.01) {
-    setCurrentCamera(crouchCamera);
-  } else {
-    setCurrentCamera(camera);
-  }
+  // if (crouchLerpY > 0.01) {
+  //   setCurrentCamera(crouchCamera);
+  // } else {
+  //   setCurrentCamera(camera);
+  // }
 }
 
 export function updateMovement() {
@@ -149,13 +146,15 @@ export function updateMovement() {
 
   move(frameVelocity);
 
+  const worldPos = new THREE.Vector3();
+  camera.getWorldPosition(worldPos);
   document.getElementById("cords").textContent =
-    `${camera.position.x.toFixed(2)} ${(camera.position.y + player_offset.y).toFixed(2)} ${camera.position.z.toFixed(2)}`;
-  document.getElementById("fr").textContent = `${ticks}`;
+    `${worldPos.x.toFixed(2)} ${worldPos.y.toFixed(2)} ${worldPos.z.toFixed(2)}`;
+  document.getElementById("fr").textContent = `${worldPos.y}, ${player.position.y}`;
 }
 
 function move(v) {
-  const pos = controls.object.position;
+  const pos = player.position;
 
   let dist = v.length();
   let steps = Math.max(1, Math.ceil(dist / stepSize));

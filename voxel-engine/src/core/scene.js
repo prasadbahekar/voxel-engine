@@ -15,7 +15,6 @@ export function initScene() {
   scene = new THREE.Scene();
 
   camera = new THREE.PerspectiveCamera(cameraNormalFOV, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 15, 0);
 
   crouchCamera = new THREE.PerspectiveCamera(cameraNormalFOV, window.innerWidth / window.innerHeight, 0.1, 1000);
   crouchCamera.position.set(0, 15, 0);
@@ -28,6 +27,7 @@ export function initScene() {
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
+  
 }
 
 export function setCurrentCamera (newCam) {
@@ -41,8 +41,8 @@ export function setCameraFOV (fov) {
 }
 
 export function updateCameraFOV() {
-  currentCamera.fov = currentFOV;
-  currentCamera.updateProjectionMatrix();
+  // currentCamera.fov = currentFOV;
+  // currentCamera.updateProjectionMatrix();
 }
 
 export function updateSky () {
