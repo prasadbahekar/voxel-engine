@@ -5,7 +5,7 @@ import { chunks, getChunkCoord } from '../world/chunks.js';
 
 export function isColliding () {
   const x = player.position.x
-  const y = player.position.y + player_offset.y
+  const y = player.position.y
   const z = player.position.z
 
   for (const offset of playerHitbox.hitboxOffset) {
@@ -20,7 +20,7 @@ export function isColliding () {
 export function isOnGround() {
   const EPSILON = 0.01;
   const x = player.position.x
-  const y = player.position.y + player_offset.y - EPSILON
+  const y = player.position.y - EPSILON
   const z = player.position.z
   const half = player_size.width / 2;
 

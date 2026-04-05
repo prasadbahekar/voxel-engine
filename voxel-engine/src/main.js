@@ -1,4 +1,4 @@
-import { initScene, scene, renderer, currentCamera, updateSky } from './core/scene.js';
+import { initScene, scene, renderer, updateSky, camera } from './core/scene.js';
 import { setupInput } from './core/input.js';
 import { initPlayer, updatePlayer } from './player/player.js';
 import { updateChunks } from './world/chunks.js';
@@ -33,7 +33,7 @@ function animate() {
   updateVisualizationHitbox();
   stats.end();
 
-  renderer.render(scene, currentCamera);
+  renderer.render(scene, camera);
 }
 
 animate();

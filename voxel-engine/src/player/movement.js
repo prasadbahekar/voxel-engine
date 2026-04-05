@@ -1,6 +1,6 @@
 import { isOnGround, isColliding } from './collision.js';
 import * as THREE from 'three';
-import { camera, updateCameraFOV, cameraNormalFOV, scene, currentCamera, crouchCamera, setCurrentCamera, currentFOV, setCameraFOV } from '../core/scene.js';
+import { camera, cameraNormalFOV, scene} from '../core/scene.js';
 import { keys } from '../core/input.js';
 import { controls } from '../core/controls.js';
 import { delta, ticks } from '../core/delta.js';
@@ -150,7 +150,7 @@ export function updateMovement() {
   camera.getWorldPosition(worldPos);
   document.getElementById("cords").textContent =
     `${worldPos.x.toFixed(2)} ${worldPos.y.toFixed(2)} ${worldPos.z.toFixed(2)}`;
-  document.getElementById("fr").textContent = `${worldPos.y}, ${player.position.y}`;
+  document.getElementById("fr").textContent = `${worldPos.y.toFixed(2)}, ${player.position.y.toFixed(2)}`;
 }
 
 function move(v) {
@@ -197,9 +197,12 @@ function updateState() {
 
   // Default
   playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6));
-  //targetFOV = cameraNormalFOV;
 
   // Update Values
+  const targetY = state === "crouch" ? CROUCH_HEIGHT : STAND_HEIGHT;
+  const lerpSpeed = 8;
+  camera.position.y += (targetY - camera.position.y) * lerpSpeed * delta;
+
   if (state == "walk") {
     speed = WALK_SPEED;
   } else if (state == "crouch") {
@@ -207,7 +210,6 @@ function updateState() {
     playerHitbox.updateSize(new THREE.Vector3(0.6, 1.5, 0.6));
   } else if (state == "sprint") {
     speed = SPRINT_SPEED;
-    //targetFOV = cameraNormalFOV * 1.1;
   }
 }
 
@@ -225,6 +227,6 @@ function updateFOV() {
   const targetFOV = MIN_FOV + (MAX_FOV - MIN_FOV) * t;
 
   const lerpSpeed = 0.4;
-  setCameraFOV(currentFOV + (targetFOV - currentFOV) * lerpSpeed);
-  updateCameraFOV();
+  camera.fov += (targetFOV - camera.fov) * lerpSpeed
+  camera.updateProjectionMatrix();
 }
