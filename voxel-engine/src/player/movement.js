@@ -188,17 +188,13 @@ function move(v) {
 
 function updateState() {
   // Detect State
-  state = "walk";
-  if (keys["shiftright"]) {
-    state = "crouch";
-  } else if (keys["controlright"]) {
-    state = "sprint";
-  }
-
-  // Default
-  playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6));
+  state = "crouch";
+  if (canUnCrouch()) state = "walk";
+  if (keys["shiftright"]) state = "crouch";
+  else if (keys["controlright"] && canUnCrouch()) state = "sprint";
 
   // Update Values
+  playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6));
   const targetY = state === "crouch" ? CROUCH_HEIGHT : STAND_HEIGHT;
   const lerpSpeed = 8;
   camera.position.y += (targetY - camera.position.y) * lerpSpeed * delta;
@@ -229,4 +225,11 @@ function updateFOV() {
   const lerpSpeed = 0.4;
   camera.fov += (targetFOV - camera.fov) * lerpSpeed
   camera.updateProjectionMatrix();
+}
+
+function canUnCrouch() {
+  playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6));
+  const canCrouch = isColliding();
+  playerHitbox.updateSize(new THREE.Vector3(0.6, 1.5, 0.6));
+  return !canCrouch;
 }
