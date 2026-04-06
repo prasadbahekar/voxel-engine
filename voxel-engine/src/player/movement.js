@@ -136,7 +136,6 @@ export function updateMovement() {
   camera.getWorldPosition(worldPos);
   document.getElementById("cords").textContent =
     `${worldPos.x.toFixed(2)} ${worldPos.y.toFixed(2)} ${worldPos.z.toFixed(2)}`;
-  document.getElementById("fr").textContent = `${worldPos.y.toFixed(2)}, ${player.position.y.toFixed(2)}`;
 }
 
 function move(v) {
