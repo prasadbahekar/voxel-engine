@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { player_head, playerHitbox, raycaster } from './player';
 import { isBlockSolid, isColliding } from './collision';
-import { keys } from '../core/input';
+import { keys, mouse } from '../core/input';
 import { camera, cameraNormalFOV, scene } from '../core/scene';
 import { delta } from '../core/delta';
+import { removeBlock } from '../world/chunks';
 export let state = "walk";
 
 let targetHeight = 1.6;
@@ -17,7 +18,8 @@ const CROUCH_SPEED = 1.3;
 const SPRINT_SPEED = 5.612;
 export let speed = WALK_SPEED;
 
-export let outlineCube;
+let outlineCube;
+export let selectedBlock = new THREE.Vector3(0, 0, 0); 
 
 // ! ~ Inits ~ ! //
 export function initSelector() {
@@ -25,6 +27,8 @@ export function initSelector() {
   const outlineMaterial = new THREE.MeshBasicMaterial({
     color: 0x000000,
     wireframe: true,
+    opacity: 0.5,
+    transparent: true,
   });
 
   outlineCube = new THREE.Mesh(outlineGeometry, outlineMaterial);
@@ -59,7 +63,6 @@ export function updateState(velocity) {
   }
 
     updateFOV(velocity);
-    updateRays();
 }
 
 function updateFOV(velocity) {
@@ -91,7 +94,7 @@ function canUnCrouch() {
 
 // ! ~ Raycasting ~ ! //
 
-function updateRays() {
+export function updateRays() {
   const direction = new THREE.Vector3();
   const origin = new THREE.Vector3();
 
@@ -104,25 +107,30 @@ function updateRays() {
   const intersects = raycaster.intersectObjects(scene.children, true);
 
   if (intersects.length > 0) {
-    const hit = intersects[0].object != outlineCube ? intersects[0] : intersects[1];
+    let hit;
+    if (intersects[0].object != outlineCube) {hit = intersects[0];}
+    else if (intersects.length > 1) {hit = intersects[1];}
+    else {
+      outlineCube.visible = false;
+      return;
+    }
+
     const point = hit.point.clone();
     const normal = hit.face.normal;
 
-    // Push slightly INSIDE the block
     point.addScaledVector(normal, -0.015);
 
     const gridPos = new THREE.Vector3(
-      Math.floor(point.x + 0.5),
+      Math.round(point.x),
       Math.floor(point.y) + 0.5,
-      Math.floor(point.z + 0.5)
+      Math.round(point.z)
     );
 
     if (isBlockSolid(point.x, point.y, point.z)) {
       outlineCube.position.copy(gridPos);
       outlineCube.visible = true;
-      document.getElementById("fr").textContent = `${point.x.toFixed(2)}, ${point.z.toFixed(2)}`;
-    } else outlineCube.visible = false;
-  } else {
-    outlineCube.visible = false;
-  }
+      selectedBlock = gridPos;
+    } 
+    else outlineCube.visible = false;
+  } else outlineCube.visible = false;
 }

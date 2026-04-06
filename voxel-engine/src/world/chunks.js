@@ -2,6 +2,7 @@ import { getTerrainHeight } from "./terrain.js";
 import { scene } from "../core/scene.js";
 import * as THREE from 'three';
 import { player } from "../player/player.js";
+import { updateRays } from "../player/states.js";
 
 const loader = new THREE.TextureLoader();
 
@@ -108,6 +109,65 @@ export function updateChunks() {
   }
 
   document.getElementById("blocks").textContent = blocksOnScreen;
+}
+
+export function rebuildChunk(chunkX, chunkZ) {
+  const key = `${chunkX},${chunkZ}`;
+  const chunk = chunks[key];
+  if (!chunk) return;
+
+  scene.remove(chunk.group);
+
+  const newGroup = new THREE.Group();
+
+  for (const [blockKey, block] of chunk.blocks) {
+    if (!block.solid) continue;
+
+    const [x, y, z] = blockKey.split(',').map(Number);
+
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.set(x, y + 0.5, z);
+
+    newGroup.add(cube);
+  }
+
+  scene.add(newGroup);
+
+  chunk.group = newGroup;
+}
+
+export function removeBlock(worldX, worldY, worldZ) {
+  const chunkX = getChunkCoord(worldX);
+  const chunkZ = getChunkCoord(worldZ);
+  const key = `${chunkX},${chunkZ}`;
+
+  const chunk = chunks[key];
+  if (!chunk) return;
+
+  const blockKey = `${worldX},${worldY-0.5},${worldZ}`;
+
+  console.log(chunk.blocks);
+  console.log(blockKey);
+  chunk.blocks.delete(blockKey);
+  console.log("Hi Daddy");
+  console.log(chunk.blocks.get(blockKey));
+  rebuildChunk(chunkX, chunkZ);
+  updateRays();
+}
+
+export function addBlock(worldX, worldY, worldZ) {
+  const chunkX = getChunkCoord(worldX);
+  const chunkZ = getChunkCoord(worldZ);
+  const key = `${chunkX},${chunkZ}`;
+
+  const chunk = chunks[key];
+  if (!chunk) return;
+
+  const blockKey = `${worldX},${worldY-0.5},${worldZ}`;
+
+  chunk.blocks.set(blockKey, { solid: true });
+
+  rebuildChunk(chunkX, chunkZ);
 }
 
 export function getPlayerChunk() {
