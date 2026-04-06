@@ -3,7 +3,7 @@ import * as THREE from 'three';
 let accumulator = 0;
 export const timer = new THREE.Timer();
 export let delta = timer.getDelta();
-export let ticks = 18040;
+export let ticks = 8040;
 export let time = 0;
 
 

@@ -5,25 +5,12 @@ import { keys } from '../core/input.js';
 import { controls } from '../core/controls.js';
 import { delta, ticks } from '../core/delta.js';
 import { player, playerHitbox } from './player.js';
+import { updateState, state, speed } from './states.js';
 
 const velocity = new THREE.Vector3();
 
-//let targetFOV = cameraNormalFOV;
-let state = "walk";
-
 const ACCELERATION = 20;
 const FRICTION = 10;
-
-const WALK_SPEED = 4.317;
-const CROUCH_SPEED = 1.3;
-const SPRINT_SPEED = 5.612;
-let speed = WALK_SPEED;
-
-let targetHeight = 1.6;
-const STAND_HEIGHT = 1.6;
-const CROUCH_HEIGHT = 1.3;
-let currentHeight = STAND_HEIGHT;
-let crouchLerpY = 0;
 
 const gravity = -18;      
 const jumpForce = 6.5;      
@@ -71,8 +58,7 @@ export function updateCameras () {
 }
 
 export function updateMovement() {
-  updateState();
-  updateFOV();
+  updateState(velocity);
   updateVisualizationHitbox();
 
   const forward = new THREE.Vector3();
@@ -184,52 +170,4 @@ function move(v) {
     if (state == "crouch" && isGround && !isOnGround()) pos.z -= dz;
     
   }
-}
-
-function updateState() {
-  // Detect State
-  state = "crouch";
-  if (canUnCrouch()) state = "walk";
-  if (keys["shiftright"]) state = "crouch";
-  else if (keys["controlright"] && canUnCrouch()) state = "sprint";
-
-  // Update Values
-  playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6));
-  const targetY = state === "crouch" ? CROUCH_HEIGHT : STAND_HEIGHT;
-  const lerpSpeed = 8;
-  camera.position.y += (targetY - camera.position.y) * lerpSpeed * delta;
-
-  if (state == "walk") {
-    speed = WALK_SPEED;
-  } else if (state == "crouch") {
-    speed = CROUCH_SPEED;
-    playerHitbox.updateSize(new THREE.Vector3(0.6, 1.5, 0.6));
-  } else if (state == "sprint") {
-    speed = SPRINT_SPEED;
-  }
-}
-
-function updateFOV() {
-  const MIN_FOV = cameraNormalFOV;
-  const MAX_FOV = cameraNormalFOV * 1.15;
-  const MIN_SPEED = WALK_SPEED;
-  const MAX_SPEED = SPRINT_SPEED;
-  const horizontalSpeed = Math.hypot(velocity.x, velocity.z);
-
-  let t = (horizontalSpeed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED);
-  t = Math.max(0, Math.min(t, 1));
-  t = t * t;
-
-  const targetFOV = MIN_FOV + (MAX_FOV - MIN_FOV) * t;
-
-  const lerpSpeed = 0.4;
-  camera.fov += (targetFOV - camera.fov) * lerpSpeed
-  camera.updateProjectionMatrix();
-}
-
-function canUnCrouch() {
-  playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6));
-  const canCrouch = isColliding();
-  playerHitbox.updateSize(new THREE.Vector3(0.6, 1.5, 0.6));
-  return !canCrouch;
 }
