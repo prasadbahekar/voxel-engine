@@ -132,10 +132,8 @@ export function updateMovement() {
 
   move(frameVelocity);
 
-  const worldPos = new THREE.Vector3();
-  camera.getWorldPosition(worldPos);
   document.getElementById("cords").textContent =
-    `${worldPos.x.toFixed(2)} ${worldPos.y.toFixed(2)} ${worldPos.z.toFixed(2)}`;
+    `${player.position.x.toFixed(2)} ${player.position.y.toFixed(2)} ${player.position.z.toFixed(2)}`;
 }
 
 function move(v) {

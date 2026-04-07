@@ -36,4 +36,5 @@ export function updatePlayer() {
   updateRays();
   updateInteractions();
   mouse.leftJustPressed = false;
+  mouse.rightJustPressed = false;
 }

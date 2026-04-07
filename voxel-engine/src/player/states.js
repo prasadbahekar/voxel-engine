@@ -4,8 +4,10 @@ import { isBlockSolid, isColliding } from './collision';
 import { keys, mouse } from '../core/input';
 import { camera, cameraNormalFOV, scene } from '../core/scene';
 import { delta } from '../core/delta';
-import { removeBlock } from '../world/chunks';
+import { addBlock, removeBlock } from '../world/chunks';
 export let state = "walk";
+
+let point, normal;
 
 let targetHeight = 1.6;
 const STAND_HEIGHT = 1.6;
@@ -101,36 +103,87 @@ export function updateRays() {
   camera.getWorldDirection(direction);
   camera.getWorldPosition(origin);
 
-  raycaster.set(origin, direction);
-  raycaster.far = 5;
+  const currentBlock = new THREE.Vector3(
+    Math.round(origin.x),
+    Math.floor(origin.y),
+    Math.round(origin.z)
+  );
 
+  if (isBlockSolid(currentBlock.x, currentBlock.y, currentBlock.z)) {
+    const gridPos = new THREE.Vector3(
+      currentBlock.x,
+      currentBlock.y + 0.5,
+      currentBlock.z
+    );
+
+    outlineCube.position.copy(gridPos);
+    outlineCube.visible = true;
+    selectedBlock = gridPos;
+
+    normal = direction.clone().multiplyScalar(-1);
+    point = origin.clone();
+
+    return;
+  }
+
+  origin.addScaledVector(direction, 0.1);
+
+  raycaster.set(origin, direction);
+  raycaster.near = 0;
+  raycaster.far = 5;
   const intersects = raycaster.intersectObjects(scene.children, true);
 
   if (intersects.length > 0) {
     let hit;
+
     if (intersects[0].object != outlineCube) {hit = intersects[0];}
     else if (intersects.length > 1) {hit = intersects[1];}
     else {
       outlineCube.visible = false;
+      selectedBlock = null;
       return;
     }
 
-    const point = hit.point.clone();
-    const normal = hit.face.normal;
+    point = hit.point.clone();
+    normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
 
-    point.addScaledVector(normal, -0.015);
+    point.addScaledVector(normal, -0.01);
 
     const gridPos = new THREE.Vector3(
-      Math.round(point.x),
+      Math.floor(point.x + 0.5),
       Math.floor(point.y) + 0.5,
-      Math.round(point.z)
+      Math.floor(point.z + 0.5)
     );
 
-    if (isBlockSolid(point.x, point.y, point.z)) {
+    if (keys["keyc"]) {
+      console.log(isBlockSolid(gridPos.x, gridPos.y, gridPos.z) ? gridPos : "");
+    }
+
+    if (isBlockSolid(gridPos.x, gridPos.y, gridPos.z)) {
       outlineCube.position.copy(gridPos);
       outlineCube.visible = true;
       selectedBlock = gridPos;
     } 
-    else outlineCube.visible = false;
-  } else outlineCube.visible = false;
+    else {
+      outlineCube.visible = false;
+      selectedBlock = null;
+    }
+  } else {
+    outlineCube.visible = false;
+    selectedBlock = null;
+  }
+}
+
+export function getPlaceBlock () {
+  if (!selectedBlock || !point || !normal) return null;
+
+  const newPoint = point.clone().addScaledVector(normal, 0.01);
+
+  const gridPos = new THREE.Vector3(
+    Math.floor(newPoint.x + 0.5),
+    Math.floor(newPoint.y) + 0.5,
+    Math.floor(newPoint.z + 0.5)
+  );
+
+  return gridPos;
 }

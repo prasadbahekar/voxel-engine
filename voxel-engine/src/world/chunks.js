@@ -162,7 +162,7 @@ export function addBlock(worldX, worldY, worldZ) {
   const chunk = chunks[key];
   if (!chunk) return;
 
-  const blockKey = `${worldX},${worldY-0.5},${worldZ}`;
+  const blockKey = `${worldX},${Math.floor(worldY)},${worldZ}`;
 
   chunk.blocks.set(blockKey, { solid: true });
 

@@ -18,12 +18,13 @@ export function isColliding () {
 }
   
 export function isOnGround() {
-  const EPSILON = 0.01;
+  const EPSILON = 0.02;
   const x = player.position.x
   const y = player.position.y - EPSILON
   const z = player.position.z
   const half = player_size.width / 2;
-
+  document.getElementById("fr").textContent =
+    `true`;
   if (
     isBlockSolid(x - half, y, z - half) ||
     isBlockSolid(x + half, y, z - half) ||
@@ -31,6 +32,8 @@ export function isOnGround() {
     isBlockSolid(x + half, y, z + half)
   ) return true;
 
+  document.getElementById("fr").textContent =
+    `false`;
   return false;
 }
 
