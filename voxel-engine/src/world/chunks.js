@@ -5,6 +5,8 @@ import { player } from "../player/player.js";
 import { updateRays } from "../player/states.js";
 
 const loader = new THREE.TextureLoader();
+export const chunks = {};
+export const worldData = {};
 
 loader.load('src/textures/blocks/dirt.png', tex => {
   console.log("grass top loaded", tex);
@@ -32,52 +34,54 @@ const materials = [
 
 const CHUNK_SIZE = 8;
 const RENDER_DISTANCE = 1;
-export const chunks = {};
 let blocksOnScreen = 0;
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = materials;
 
 export function createChunk(chunkX, chunkZ) {
-  const group = new THREE.Group();
   const key = `${chunkX},${chunkZ}`;
+  console.log("Creating chunk:", key, "Exists in worldData?", !!worldData[key]);
   if (chunks[key]) return;
-  const blocks = new Map();
+  let chunkData = worldData[key];
+  if (!chunkData) {
+    const blocks = new Map();
 
-  for (let x = 0; x < CHUNK_SIZE; x++) {
-    for (let z = 0; z < CHUNK_SIZE; z++) {
+    for (let x = 0; x < CHUNK_SIZE; x++) {
+      for (let z = 0; z < CHUNK_SIZE; z++) {
+        const worldX = chunkX * CHUNK_SIZE + x;
+        const worldZ = chunkZ * CHUNK_SIZE + z;
+        const height = getTerrainHeight(worldX, worldZ);
 
-      const worldX = chunkX * CHUNK_SIZE + x;
-      const worldZ = chunkZ * CHUNK_SIZE + z;
-
-      const height = getTerrainHeight(worldX, worldZ);
-
-      if (x == 5 & z == 5) {
-        const cube = new THREE.Mesh(geometry, material);
-        cube.position.set(worldX, height + 2.5, worldZ);
-        group.add(cube);
-        blocksOnScreen += 1;
-
-        const blockKey = `${worldX},${height+2},${worldZ}`;
-        blocks.set(blockKey, { solid: true });
-      }
-
-      for (let y = 0; y < height; y++) {
-        const cube = new THREE.Mesh(geometry, material);
-        cube.position.set(worldX, y + 0.5, worldZ);
-        group.add(cube);
-        blocksOnScreen += 1;
-
-        const blockKey = `${worldX},${y},${worldZ}`;
-        blocks.set(blockKey, { solid: true });
+        for (let y = 0; y < height; y++) {
+          const blockKey = `${worldX},${y},${worldZ}`;
+          blocks.set(blockKey, { solid: true });
+        }
       }
     }
+
+    worldData[key] = { blocks };
+    chunkData = worldData[key];
+  }
+
+  const group = new THREE.Group();
+
+  for (const [blockKey, block] of chunkData.blocks) {
+    if (!block.solid) continue;
+
+    const [x, y, z] = blockKey.split(',').map(Number);
+
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.set(x, y + 0.5, z);
+
+    group.add(cube);
   }
 
   scene.add(group);
+
   chunks[key] = {
     group,
-    blocks
+    blocks: chunkData.blocks
   };
 }
 
@@ -144,13 +148,8 @@ export function removeBlock(worldX, worldY, worldZ) {
   const chunk = chunks[key];
   if (!chunk) return;
 
-  const blockKey = `${worldX},${worldY-0.5},${worldZ}`;
-
-  console.log(chunk.blocks);
-  console.log(blockKey);
+  const blockKey = `${worldX},${Math.floor(worldY)},${worldZ}`;
   chunk.blocks.delete(blockKey);
-  console.log("Hi Daddy");
-  console.log(chunk.blocks.get(blockKey));
   rebuildChunk(chunkX, chunkZ);
   updateRays();
 }
