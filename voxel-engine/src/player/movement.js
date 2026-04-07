@@ -153,6 +153,9 @@ function move(v) {
     pos.y += dy;
     if (isColliding()) {
       pos.y -= dy;
+      if (velocity.y < 0) {
+        pos.y = Math.round(pos.y * 100) / 100;
+      }
       velocity.y = 0;
     }
 
