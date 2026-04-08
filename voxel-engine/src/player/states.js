@@ -150,14 +150,10 @@ export function updateRays() {
     point.addScaledVector(normal, -0.01);
 
     const gridPos = new THREE.Vector3(
-      Math.floor(point.x + 0.5),
+      Math.round(point.x),
       Math.floor(point.y) + 0.5,
-      Math.floor(point.z + 0.5)
+      Math.round(point.z)
     );
-
-    if (keys["keyc"]) {
-      console.log(isBlockSolid(gridPos.x, gridPos.y, gridPos.z) ? gridPos : "");
-    }
 
     if (isBlockSolid(gridPos.x, gridPos.y, gridPos.z)) {
       outlineCube.position.copy(gridPos);
@@ -177,13 +173,17 @@ export function updateRays() {
 export function getPlaceBlock () {
   if (!selectedBlock || !point || !normal) return null;
 
-  const newPoint = point.clone().addScaledVector(normal, 0.01);
+  // const newPoint = point.clone().addScaledVector(normal, 0.02);
+  const newPoint = point.clone().add(normal.clone().multiplyScalar(0.5));
 
   const gridPos = new THREE.Vector3(
-    Math.floor(newPoint.x + 0.5),
+    Math.round(newPoint.x),
     Math.floor(newPoint.y) + 0.5,
-    Math.floor(newPoint.z + 0.5)
+    Math.round(newPoint.z)
   );
+
+    document.getElementById("fr").textContent =
+    `${point.x} ${newPoint.x} ${Math.round(newPoint.x)}`;
 
   return gridPos;
 }

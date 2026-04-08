@@ -8,11 +8,7 @@ const loader = new THREE.TextureLoader();
 export const chunks = {};
 export const worldData = {};
 
-loader.load('src/textures/blocks/dirt.png', tex => {
-  console.log("grass top loaded", tex);
-}, undefined, err => {
-  console.error("FAILED to load grass_top", err);
-});
+loader.load('src/textures/blocks/dirt.png');
 
 const grassTop = loader.load('src/textures/blocks/grass_top.png');
 const grassSide = loader.load('src/textures/blocks/grass_side.png');
@@ -41,7 +37,6 @@ const material = materials;
 
 export function createChunk(chunkX, chunkZ) {
   const key = `${chunkX},${chunkZ}`;
-  console.log("Creating chunk:", key, "Exists in worldData?", !!worldData[key]);
   if (chunks[key]) return;
   let chunkData = worldData[key];
   if (!chunkData) {

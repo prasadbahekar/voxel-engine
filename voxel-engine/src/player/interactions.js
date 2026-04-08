@@ -8,7 +8,7 @@ import { isColliding } from "./collision";
 const BREAK_DELAY = 0.5;
 let breakCooldown = 0;
 
-const PLACE_DELAY = 0.1;
+const PLACE_DELAY = 0.2;
 let placeCooldown = 0;
 
 export function updateInteractions() {
@@ -31,6 +31,4 @@ export function updateInteractions() {
             placeCooldown = PLACE_DELAY;
         }
     }
-
-
 }
