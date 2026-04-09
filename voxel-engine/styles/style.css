@@ -1,3 +1,23 @@
+body {
+  margin: 0;
+  position: relative;
+}
+
+/* ! Stats ! */
+
+#stats {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  color: white;
+  background: rgba(0,0,0,0.5);
+  padding: 10px;
+  font-family: monospace;
+  z-index: 100;
+}
+
+/* ! Crosshair ! */
+
 #crosshair {
   position: fixed;
   top: 50%;
@@ -9,7 +29,6 @@
   z-index: 1000;
 }
 
-/* Horizontal line */
 #crosshair::before,
 #crosshair::after {
   content: '';
@@ -17,7 +36,6 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
-/* Horizontal */
 #crosshair::before {
   top: 50%;
   left: 0;
@@ -26,11 +44,37 @@
   transform: translateY(-50%);
 }
 
-/* Vertical */
 #crosshair::after {
   left: 50%;
   top: 0;
   width: 2px;
   height: 100%;
   transform: translateX(-50%);
+}
+
+/* ! Hotbar ! */
+#hotbar {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 364px;
+  height: 44px;
+  z-index: 1000;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+#hotbar img {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+#hot-selection {
+  position: absolute;
+  width: 48px;
+  height: 46px;
+  left: -2px;
+  top: -1px;
 }

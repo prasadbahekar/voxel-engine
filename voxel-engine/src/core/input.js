@@ -3,7 +3,9 @@ export const mouse = {
   left: false,
   leftJustPressed: false,
   right: false,
-  rightJustPressed: false
+  rightJustPressed: false,
+  wheel: 0,
+  wheelDirection: 0,
 };
 
 export function setupInput() {
@@ -27,4 +29,22 @@ export function setupInput() {
     if (e.button === 2) mouse.right = false;
     
   });
+
+  window.addEventListener("wheel", (e) => {
+    if (e.ctrlKey) e.preventDefault();
+
+    mouse.wheel += e.deltaY;
+
+    if (e.deltaY > 0) { mouse.wheelDirection = 1; } 
+    else if (e.deltaY < 0) { mouse.wheelDirection = -1; }
+
+  }, { passive: false });
+}
+
+export function resetInput() {
+  mouse.leftJustPressed = false;
+  mouse.rightJustPressed = false;
+
+  mouse.wheel = 0;
+  mouse.wheelDirection = 0;
 }

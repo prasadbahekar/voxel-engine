@@ -25,7 +25,6 @@ export function initPlayer() {
   player.add(player_head);
   player.position.set(0, 20, 0);
   initSelector();
-  // initVisualizationHitbox();
 }
 
 export const playerHitbox = new Hitbox(new THREE.Vector3(0.6, 1.8, 0.6), new THREE.Vector3(1, 4, 1));
@@ -35,6 +34,4 @@ export function updatePlayer() {
   updateMovement();
   updateRays();
   updateInteractions();
-  mouse.leftJustPressed = false;
-  mouse.rightJustPressed = false;
 }
