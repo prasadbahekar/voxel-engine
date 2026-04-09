@@ -38,25 +38,6 @@ export function updateVisualizationHitbox () {
   });
 }
 
-export function updateCameras () {
-  // setCurrentCamera(camera);
-  // const crouchAmount = state == "crouch" ? 1 : 0;
-
-  // const lerpSpeed = 10;
-  // crouchLerpY += (crouchAmount - crouchLerpY) * lerpSpeed * delta;
-
-  // crouchCamera.position.copy(player.position);
-  // crouchCamera.rotation.copy(player.rotation);
-
-  // crouchCamera.position.y -= 0.3 * crouchLerpY;
-
-  // if (crouchLerpY > 0.01) {
-  //   setCurrentCamera(crouchCamera);
-  // } else {
-  //   setCurrentCamera(camera);
-  // }
-}
-
 export function updateMovement() {
   updateState(velocity);
   updateVisualizationHitbox();
@@ -119,7 +100,7 @@ export function updateMovement() {
   if (isOnGround()) {
     if (velocity.y < 0) velocity.y = 0;
 
-    if (keys["space"]) {
+    if (keys["space"] && velocity.y == 0) {
       velocity.y = jumpForce;
     }
   }

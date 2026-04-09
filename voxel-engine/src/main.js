@@ -1,14 +1,13 @@
 import { initScene, scene, renderer, updateSky, camera } from './core/scene.js';
-import { mouse, resetInput, setupInput } from './core/input.js';
+import { resetInput, setupInput } from './core/input.js';
 import { initPlayer, updatePlayer } from './player/player.js';
 import { updateChunks } from './world/chunks.js';
 import { initControls } from './core/controls.js';
 import { updateTimer } from './core/delta.js';
 import { initSky } from './world/lighting.js';
-import { Hitbox } from './models/hitbox.js';
 import * as THREE from 'three';
 import Stats from 'stats.js';
-import { updateCameras, updateVisualizationHitbox } from './player/movement.js';
+import { updateVisualizationHitbox } from './player/movement.js';
 import { updateHUD } from './hud/ingame.js';
 
 const stats = new Stats();
@@ -29,7 +28,6 @@ function animate() {
   updateTimer();
   updateSky();
   updatePlayer();
-  updateCameras();
   updateChunks();
   updateVisualizationHitbox();
   updateHUD();
