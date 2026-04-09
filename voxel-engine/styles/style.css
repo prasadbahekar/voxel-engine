@@ -52,17 +52,56 @@ body {
   transform: translateX(-50%);
 }
 
-/* ! Hotbar ! */
-#hotbar {
+/* ! Bottom HUD ! */
+
+#bottom-hud {
   position: fixed;
   bottom: 16px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 364px;
-  height: 44px;
   z-index: 1000;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+
+#experience-bar {
+  width: 364px;
+  height: 10px;
+  margin-bottom: 10px;
+  transform: translateX(-50%);
+  position: relative;
+}
+
+#experience-bar > img {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#exp-mask {
+  width: 50%;
+  height: 100px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+#exp-selection {
+  width: 364px;
+  height: 10px;
+  image-rendering: pixelated;
+  top: 0;
+  left: 0;
+  position: absolute;
+}
+
+#hotbar {
+  transform: translateX(-50%);
+  width: 364px;
+  height: 44px;
 }
 
 #hotbar img {
