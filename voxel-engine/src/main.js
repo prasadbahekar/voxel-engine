@@ -20,7 +20,6 @@ setupInput();
 initPlayer();
 initControls();
 
-
 function animate() {
   requestAnimationFrame(animate);
 

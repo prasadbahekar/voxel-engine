@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { delta } from "../core/delta";
 import { mouse } from "../core/input";
 import { getPlaceBlock, selectedBlock } from "./states";
@@ -11,12 +12,15 @@ let breakCooldown = 0;
 const PLACE_DELAY = 0.2;
 let placeCooldown = 0;
 
+let prevSelBlock = null;
+
 export function updateInteractions() {
 
     if (placeCooldown >= 0) placeCooldown -= delta;
 
     if (mouse.left) {
         breakCooldown -= delta;
+       if (!isSameBlock(prevSelBlock, selectedBlock)) breakCooldown = BREAK_DELAY; 
         if (breakCooldown <= 0) {
         if (selectedBlock) removeBlock(selectedBlock.x, selectedBlock.y, selectedBlock.z);
         breakCooldown = BREAK_DELAY;
@@ -31,4 +35,11 @@ export function updateInteractions() {
             placeCooldown = PLACE_DELAY;
         }
     }
+
+    prevSelBlock = selectedBlock ? selectedBlock.clone() : null;
+}
+
+function isSameBlock(a, b) {
+  if (!a || !b) return false;
+  return a.x === b.x && a.y === b.y && a.z === b.z;
 }
