@@ -54,19 +54,24 @@ export function updateMovement() {
   let moveX = 0;
   let moveZ = 0;
 
-  if (keys["arrowup"]) {
+  const forwardKey = keys["arrowup"] || keys["keyw"];
+  const backwardKey = keys["arrowdown"] || keys["keys"];
+  const rightKey = keys["arrowright"] || keys["keyd"];
+  const leftKey = keys["arrowleft"] || keys["keya"];
+
+  if (forwardKey) {
     moveX += forward.x;
     moveZ += forward.z;
   }
-  if (keys["arrowdown"]) {
+  if (backwardKey) {
     moveX -= forward.x;
     moveZ -= forward.z;
   }
-  if (keys["arrowright"]) {
+  if (rightKey) {
     moveX += right.x;
     moveZ += right.z;
   }
-  if (keys["arrowleft"]) {
+  if (leftKey) {
     moveX -= right.x;
     moveZ -= right.z;
   }

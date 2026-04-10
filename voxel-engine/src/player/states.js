@@ -46,8 +46,8 @@ export function updateState(velocity) {
   // Detect State
   state = "crouch";
   if (canUnCrouch()) state = "walk";
-  if (keys["shiftright"]) state = "crouch";
-  else if (keys["controlright"] && canUnCrouch()) state = "sprint";
+  if (keys["shiftright"] || keys["shiftleft"]) state = "crouch";
+  else if ((keys["controlright"]  || keys["capslock"]) && canUnCrouch()) state = "sprint";
 
   // Update Values
   playerHitbox.updateSize(new THREE.Vector3(0.6, 1.8, 0.6));
