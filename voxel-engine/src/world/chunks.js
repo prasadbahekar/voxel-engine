@@ -10,9 +10,13 @@ export const worldData = {};
 
 loader.load('src/textures/blocks/dirt.png');
 
-const grassTop = loader.load('src/textures/blocks/grass_top.png');
-const grassSide = loader.load('src/textures/blocks/grass_side.png');
-const dirt = loader.load('src/textures/blocks/dirt.png');
+import grass_top_t from '../textures/blocks/grass_top.png';
+import grass_side_t from '../textures/blocks/grass_side.png';
+import dirt_t from '../textures/blocks/dirt.png';
+
+const grassTop = loader.load(grass_top_t);
+const grassSide = loader.load(grass_side_t);
+const dirt = loader.load(dirt_t);
 
 [grassTop, grassSide, dirt].forEach(tex => {
   tex.magFilter = THREE.NearestFilter;
