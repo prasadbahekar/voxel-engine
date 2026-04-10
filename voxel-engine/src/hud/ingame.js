@@ -2,21 +2,23 @@ import { keys, mouse } from "../core/input";
 
 const selection = document.getElementById("hot-selection");
 const expMask = document.getElementById("exp-mask");
+let prevKeys = {};
 let current_hotbar = 2;
-let exp = 7;
+let exp = 0;
 
 export function updateHUD() {
     for (let i = 1; i <= 9; i++) {
-        const key = "digit" + i;
-        if (keys[key]) {
-        current_hotbar = i - 1;
-        }
+      const key = "digit" + i;
+      if (keys[key] && !prevKeys[key]) current_hotbar = i - 1;
+      prevKeys[key] = keys[key];
     }
-    setSlot(current_hotbar);
+
     if (mouse.wheelDirection == 1) {current_hotbar = (current_hotbar + 1) % 9;}
     if (mouse.wheelDirection == -1) {current_hotbar = (current_hotbar - 1 + 9) % 9;}
-
-    updateExpBar(exp);
+    
+    setSlot(current_hotbar);
+    updateExpBar(Math.floor(exp));
+    exp += 0.03;
 }
 
 function getTotalXP(level) {
