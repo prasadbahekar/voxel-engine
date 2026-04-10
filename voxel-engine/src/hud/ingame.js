@@ -1,6 +1,15 @@
 import { keys, mouse } from "../core/input";
 import { player_stats } from "../player/player";
 
+// IMAGES
+import heart_full from '../textures/hud/heart/full.png';
+import heart_container from '../textures/hud/heart/container.png';
+import heart_half from '../textures/hud/heart/half.png';
+
+import hunger_full from '../textures/hud/food/full.png';
+import hunger_container from '../textures/hud/food/container.png';
+import hunger_half from '../textures/hud/food/half.png';
+
 const selection = document.getElementById("hot-selection");
 const expMask = document.getElementById("exp-mask");
 let prevKeys = {};
@@ -34,10 +43,10 @@ function updateHearts() {
   for (let i = 0; i < Math.ceil(player_stats.TOTAL_HP / 2); i++) {
     const item = healthBar.children[i].getElementsByClassName("overlay")[0];
     if (player_stats.hp >= (i + 1) * 2) {
-      item.src = "./src/textures/hud/heart/full.png";
+      item.src = heart_full;
       item.classList.remove("hidden");
     } else if (player_stats.hp == ((i + 1) * 2) - 1) {
-      item.src = "./src/textures/hud/heart/half.png";
+      item.src = heart_half;
       item.classList.remove("hidden");
     } else {
       item.classList.add("hidden");
@@ -53,10 +62,10 @@ function updateHunger() {
   for (let i = 0; i < Math.ceil(player_stats.TOTAL_HUNGER / 2); i++) {
     const item = hungerBar.children[i].getElementsByClassName("overlay")[0];
     if (player_stats.hunger >= (i + 1) * 2) {
-      item.src = "./src/textures/hud/food/full.png";
+      item.src = hunger_full;
       item.classList.remove("hidden");
     } else if (player_stats.hunger == ((i + 1) * 2) - 1) {
-      item.src = "./src/textures/hud/food/half.png";
+      item.src = hunger_half;
       item.classList.remove("hidden");
     } else {
       item.classList.add("hidden");
@@ -124,10 +133,10 @@ function createHeart() {
   heartDiv.className = "heart";
 
   const img1 = document.createElement("img");
-  img1.src = "./src/textures/hud/heart/container.png";
+  img1.src = heart_container;
 
   const img2 = document.createElement("img");
-  img2.src = "./src/textures/hud/heart/full.png";
+  img2.src = heart_full;
   img2.classList.add("overlay");
 
   heartDiv.appendChild(img1);
@@ -141,10 +150,10 @@ function createHunger() {
   heartDiv.className = "hunger";
 
   const img1 = document.createElement("img");
-  img1.src = "./src/textures/hud/food/container.png";
+  img1.src = hunger_container;
 
   const img2 = document.createElement("img");
-  img2.src = "./src/textures/hud/food/full.png";
+  img2.src = hunger_full;
   img2.classList.add("overlay");
 
   heartDiv.appendChild(img1);
