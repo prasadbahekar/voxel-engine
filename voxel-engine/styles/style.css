@@ -59,14 +59,73 @@ body {
   bottom: 16px;
   left: 50%;
   z-index: 1000;
+  width: 364px;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+
+
+#hh-container {
+  display: flex;
+  width: 100%;
+  transform: translateX(-50%);
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+#health-bar {
+  display: flex;
+  gap: 0px;
+}
+
+#health-bar .heart {
+  position: relative;
+  height: 18px;
+  width: 18px;
+  margin-right: -1px;
+}
+
+#health-bar .heart img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#health-bar .heart img.hidden {
+  display: none;
+}
+
+#hunger-bar {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 0px;
+}
+
+#hunger-bar .hunger {
+  position: relative;
+  height: 18px;
+  width: 18px;
+  margin-right: -1px;
+}
+
+#hunger-bar .hunger img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#hunger-bar .hunger img.hidden {
+  display: none;
 }
 
 #experience-bar {
   width: 364px;
   height: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   transform: translateX(-50%);
   position: relative;
 }

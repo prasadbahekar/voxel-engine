@@ -14,6 +14,15 @@ export let player_size = {
   width: 0.6,
 };
 
+
+export let player_stats = {
+  TOTAL_HP: 20,
+  hp: 18,
+  TOTAL_HUNGER: 20,
+  hunger: 15,
+  exp: 0
+};
+
 export function initPlayer() {
   player = new THREE.Group();
   player_head = new THREE.Group();

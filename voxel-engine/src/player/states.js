@@ -182,8 +182,5 @@ export function getPlaceBlock () {
     Math.round(newPoint.z)
   );
 
-    document.getElementById("fr").textContent =
-    `${point.x} ${newPoint.x} ${Math.round(newPoint.x)}`;
-
   return gridPos;
 }

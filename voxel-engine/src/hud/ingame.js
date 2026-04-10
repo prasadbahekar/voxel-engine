@@ -1,10 +1,13 @@
 import { keys, mouse } from "../core/input";
+import { player_stats } from "../player/player";
 
 const selection = document.getElementById("hot-selection");
 const expMask = document.getElementById("exp-mask");
 let prevKeys = {};
 let current_hotbar = 2;
-let exp = 0;
+
+const healthBar = document.getElementById("health-bar");
+const hungerBar = document.getElementById("hunger-bar");
 
 export function updateHUD() {
     for (let i = 1; i <= 9; i++) {
@@ -15,10 +18,50 @@ export function updateHUD() {
 
     if (mouse.wheelDirection == 1) {current_hotbar = (current_hotbar + 1) % 9;}
     if (mouse.wheelDirection == -1) {current_hotbar = (current_hotbar - 1 + 9) % 9;}
-    
+
     setSlot(current_hotbar);
-    updateExpBar(Math.floor(exp));
-    exp += 0.03;
+    updateExpBar(Math.floor(player_stats.exp));
+    updateHearts();
+    updateHunger();
+    player_stats.exp += 0.03;
+}
+
+function updateHearts() {
+  if (healthBar.childElementCount != Math.ceil(player_stats.TOTAL_HP / 2)) {
+    removeAllChildren(healthBar);
+    for (let i = 0; i < Math.ceil(player_stats.TOTAL_HP / 2); i++) healthBar.appendChild(createHeart());
+  }
+  for (let i = 0; i < Math.ceil(player_stats.TOTAL_HP / 2); i++) {
+    const item = healthBar.children[i].getElementsByClassName("overlay")[0];
+    if (player_stats.hp >= (i + 1) * 2) {
+      item.src = "./src/textures/hud/heart/full.png";
+      item.classList.remove("hidden");
+    } else if (player_stats.hp == ((i + 1) * 2) - 1) {
+      item.src = "./src/textures/hud/heart/half.png";
+      item.classList.remove("hidden");
+    } else {
+      item.classList.add("hidden");
+    }
+  }
+}
+
+function updateHunger() {
+  if (hungerBar.childElementCount != Math.ceil(player_stats.TOTAL_HUNGER / 2)) {
+    removeAllChildren(hungerBar);
+    for (let i = 0; i < Math.ceil(player_stats.TOTAL_HUNGER / 2); i++) hungerBar.appendChild(createHunger());
+  }
+  for (let i = 0; i < Math.ceil(player_stats.TOTAL_HUNGER / 2); i++) {
+    const item = hungerBar.children[i].getElementsByClassName("overlay")[0];
+    if (player_stats.hunger >= (i + 1) * 2) {
+      item.src = "./src/textures/hud/food/full.png";
+      item.classList.remove("hidden");
+    } else if (player_stats.hunger == ((i + 1) * 2) - 1) {
+      item.src = "./src/textures/hud/food/half.png";
+      item.classList.remove("hidden");
+    } else {
+      item.classList.add("hidden");
+    }
+  }
 }
 
 function getTotalXP(level) {
@@ -64,4 +107,48 @@ function setSlot(index) {
   const gap = 6;   
   const x = (index * (slotWidth + gap)) - 2;
   selection.style.left = x + "px";
+}
+
+function removeAllChildren(element) {
+    if (!(element instanceof HTMLElement)) {
+        console.error("Invalid element provided.");
+        return;
+    }
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+}
+
+function createHeart() {
+  const heartDiv = document.createElement("div");
+  heartDiv.className = "heart";
+
+  const img1 = document.createElement("img");
+  img1.src = "./src/textures/hud/heart/container.png";
+
+  const img2 = document.createElement("img");
+  img2.src = "./src/textures/hud/heart/full.png";
+  img2.classList.add("overlay");
+
+  heartDiv.appendChild(img1);
+  heartDiv.appendChild(img2);
+
+  return heartDiv;
+}
+
+function createHunger() {
+  const heartDiv = document.createElement("div");
+  heartDiv.className = "hunger";
+
+  const img1 = document.createElement("img");
+  img1.src = "./src/textures/hud/food/container.png";
+
+  const img2 = document.createElement("img");
+  img2.src = "./src/textures/hud/food/full.png";
+  img2.classList.add("overlay");
+
+  heartDiv.appendChild(img1);
+  heartDiv.appendChild(img2);
+
+  return heartDiv;
 }
