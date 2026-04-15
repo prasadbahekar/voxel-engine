@@ -8,6 +8,9 @@ const loader = new THREE.TextureLoader();
 export const chunks = {};
 export const worldData = {};
 
+const chunkQueue = [];
+const MAX_CHUNKS_PER_FRAME = 1;
+
 loader.load('src/textures/blocks/dirt.png');
 
 import grass_top_t from '../textures/blocks/grass_top.png';
@@ -43,7 +46,7 @@ const directions = [
 ];
 
 const CHUNK_SIZE = 16;
-const RENDER_DISTANCE = 1;
+const RENDER_DISTANCE = 2;
 let blocksOnScreen = 0;
 
 const geometry = new THREE.PlaneGeometry(1, 1);
@@ -178,7 +181,7 @@ export function updateChunks() {
       neededChunks[key] = true;
 
       if (!chunks[key]) {
-        createChunk(chunkX, chunkZ);
+        enqueueChunk(chunkX, chunkZ);
       }
     }
   }
@@ -247,4 +250,24 @@ export function getPlayerChunk() {
 
 export function getChunkCoord(pos) {
   return Math.floor(pos / CHUNK_SIZE);
+}
+
+
+function enqueueChunk(chunkX, chunkZ) {
+  const key = `${chunkX},${chunkZ}`;
+
+  if (chunks[key]) return;
+  if (chunkQueue.find(c => c.key === key)) return;
+
+  chunkQueue.push({ chunkX, chunkZ, key });
+}
+
+export function processChunkQueue() {
+  let count = 0;
+
+  while (chunkQueue.length > 0 && count < MAX_CHUNKS_PER_FRAME) {
+    const { chunkX, chunkZ } = chunkQueue.shift();
+    createChunk(chunkX, chunkZ);
+    count++;
+  }
 }

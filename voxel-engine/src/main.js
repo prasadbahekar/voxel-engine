@@ -1,7 +1,7 @@
 import { initScene, scene, renderer, updateSky, camera } from './core/scene.js';
 import { resetInput, setupInput } from './core/input.js';
 import { initPlayer, updatePlayer } from './player/player.js';
-import { updateChunks } from './world/chunks.js';
+import { processChunkQueue, updateChunks } from './world/chunks.js';
 import { initControls } from './core/controls.js';
 import { updateTimer } from './core/delta.js';
 import { initSky } from './world/lighting.js';
@@ -28,6 +28,7 @@ function animate() {
   updateSky();
   updatePlayer();
   updateChunks();
+  processChunkQueue();
   updateVisualizationHitbox();
   updateHUD();
   resetInput();
