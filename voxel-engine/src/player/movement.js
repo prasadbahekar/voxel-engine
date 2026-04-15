@@ -12,7 +12,7 @@ const velocity = new THREE.Vector3();
 const ACCELERATION = 20;
 const FRICTION = 10;
 
-const gravity = -18;      
+const gravity = -19;      
 const jumpForce = 6.5;      
 const stepSize = 0.1;
 

@@ -120,7 +120,6 @@ function setSlot(index) {
 
 function removeAllChildren(element) {
     if (!(element instanceof HTMLElement)) {
-        console.error("Invalid element provided.");
         return;
     }
     while (element.firstChild) {

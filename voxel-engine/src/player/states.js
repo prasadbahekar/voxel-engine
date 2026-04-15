@@ -102,85 +102,101 @@ export function updateRays() {
 
   camera.getWorldDirection(direction);
   camera.getWorldPosition(origin);
+  origin.addScaledVector(direction, 0.0001);
 
-  const currentBlock = new THREE.Vector3(
-    Math.round(origin.x),
-    Math.floor(origin.y),
-    Math.round(origin.z)
-  );
+  const result = raycastVoxel(origin, direction, 5);
 
-  if (isBlockSolid(currentBlock.x, currentBlock.y, currentBlock.z)) {
-    const gridPos = new THREE.Vector3(
-      currentBlock.x,
-      currentBlock.y + 0.5,
-      currentBlock.z
+  if (result) {
+    const block = result.block;
+    const hitNormal = result.normal;
+    const hitPoint = result.hitPoint;
+
+    selectedBlock = block.clone();
+    normal = hitNormal.clone();
+    point = hitPoint.clone();
+
+    outlineCube.position.set(
+      block.x + 0.5,
+      block.y + 0.5,
+      block.z + 0.5
     );
 
-    outlineCube.position.copy(gridPos);
     outlineCube.visible = true;
-    selectedBlock = gridPos;
+    selectedBlock = block.clone();
 
-    normal = direction.clone().multiplyScalar(-1);
-    point = origin.clone();
-
-    return;
-  }
-
-  origin.addScaledVector(direction, 0.1);
-
-  raycaster.set(origin, direction);
-  raycaster.near = 0;
-  raycaster.far = 5;
-  const intersects = raycaster.intersectObjects(scene.children, true);
-
-  if (intersects.length > 0) {
-    let hit;
-
-    if (intersects[0].object != outlineCube) {hit = intersects[0];}
-    else if (intersects.length > 1) {hit = intersects[1];}
-    else {
-      outlineCube.visible = false;
-      selectedBlock = null;
-      return;
-    }
-
-    point = hit.point.clone();
-    normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
-
-    point.addScaledVector(normal, -0.01);
-
-    const gridPos = new THREE.Vector3(
-      Math.round(point.x),
-      Math.floor(point.y) + 0.5,
-      Math.round(point.z)
-    );
-
-    if (isBlockSolid(gridPos.x, gridPos.y, gridPos.z)) {
-      outlineCube.position.copy(gridPos);
-      outlineCube.visible = true;
-      selectedBlock = gridPos;
-    } 
-    else {
-      outlineCube.visible = false;
-      selectedBlock = null;
-    }
+    point = hitPoint.clone();
+    window.normal = normal.clone();
   } else {
     outlineCube.visible = false;
     selectedBlock = null;
   }
 }
 
-export function getPlaceBlock () {
-  if (!selectedBlock || !point || !normal) return null;
+function raycastVoxel(origin, direction, maxDistance) {
+  const pos = origin.clone();
 
-  // const newPoint = point.clone().addScaledVector(normal, 0.02);
-  const newPoint = point.clone().add(normal.clone().multiplyScalar(0.5));
+  let x = Math.floor(pos.x);
+  let y = Math.floor(pos.y);
+  let z = Math.floor(pos.z);
 
-  const gridPos = new THREE.Vector3(
-    Math.round(newPoint.x),
-    Math.floor(newPoint.y) + 0.5,
-    Math.round(newPoint.z)
+  const stepX = Math.sign(direction.x);
+  const stepY = Math.sign(direction.y);
+  const stepZ = Math.sign(direction.z);
+
+  const tDeltaX = Math.abs(1 / direction.x);
+  const tDeltaY = Math.abs(1 / direction.y);
+  const tDeltaZ = Math.abs(1 / direction.z);
+
+  const distToBoundary = (pos, step) =>
+    step > 0 ? Math.ceil(pos) - pos : pos - Math.floor(pos);
+
+  let tMaxX = tDeltaX * distToBoundary(pos.x, stepX);
+  let tMaxY = tDeltaY * distToBoundary(pos.y, stepY);
+  let tMaxZ = tDeltaZ * distToBoundary(pos.z, stepZ);
+
+  let normal = new THREE.Vector3();
+  let dist = 0;
+
+  while (dist <= maxDistance) {
+
+    if (tMaxX < tMaxY && tMaxX < tMaxZ) {
+      x += stepX;
+      dist = tMaxX;
+      tMaxX += tDeltaX;
+      normal.set(-stepX, 0, 0);
+    } 
+    else if (tMaxY < tMaxZ) {
+      y += stepY;
+      dist = tMaxY;
+      tMaxY += tDeltaY;
+      normal.set(0, -stepY, 0);
+    } 
+    else {
+      z += stepZ;
+      dist = tMaxZ;
+      tMaxZ += tDeltaZ;
+      normal.set(0, 0, -stepZ);
+    }
+
+    pos.copy(origin).addScaledVector(direction, dist);
+
+    if (isBlockSolid(x, y, z)) {
+      return {
+        block: new THREE.Vector3(x, y, z),
+        normal: normal.clone(),
+        hitPoint: pos.clone()
+      };
+    }
+  }
+
+  return null;
+}
+export function getPlaceBlock() {
+  if (!selectedBlock || !normal) return null;
+
+  return new THREE.Vector3(
+    selectedBlock.x + normal.x,
+    selectedBlock.y + normal.y,
+    selectedBlock.z + normal.z
   );
-
-  return gridPos;
 }

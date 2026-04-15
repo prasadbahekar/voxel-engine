@@ -37,9 +37,9 @@ export function isOnGround() {
 export function isBlockSolid(x, y, z) {
   const EPS = 0.0001;
 
-  const bx = Math.round(x + EPS);
+  const bx = Math.floor(x + EPS);
   const by = Math.floor(y + EPS);
-  const bz = Math.round(z + EPS);
+  const bz = Math.floor(z + EPS);
 
   const chunkX = getChunkCoord(bx);
   const chunkZ = getChunkCoord(bz);

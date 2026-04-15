@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { camera, scene } from '../core/scene.js';
 import { ticks } from '../core/delta.js';
 import { skinning } from 'three/src/nodes/accessors/SkinningNode.js';
+import { player } from '../player/player.js';
 
 let skyRig;
 let sunMesh;
@@ -70,7 +71,7 @@ export function updateSun() {
 
   // Sky
   skyRig.rotation.x = -angle;
-  skyRig.position.copy(camera.position);
+  skyRig.position.copy(player.position);
 }
 
 function getAmbientFromTicks() {
