@@ -36,16 +36,19 @@ export function updateHUD() {
 }
 
 function updateHearts() {
+  const hp = Math.ceil(player_stats.hp);
   if (healthBar.childElementCount != Math.ceil(player_stats.TOTAL_HP / 2)) {
     removeAllChildren(healthBar);
     for (let i = 0; i < Math.ceil(player_stats.TOTAL_HP / 2); i++) healthBar.appendChild(createHeart());
   }
+
   for (let i = 0; i < Math.ceil(player_stats.TOTAL_HP / 2); i++) {
     const item = healthBar.children[i].getElementsByClassName("overlay")[0];
-    if (player_stats.hp >= (i + 1) * 2) {
+
+    if (hp >= (i + 1) * 2) {
       item.src = heart_full;
       item.classList.remove("hidden");
-    } else if (player_stats.hp == ((i + 1) * 2) - 1) {
+    } else if (hp == ((i + 1) * 2) - 1) {
       item.src = heart_half;
       item.classList.remove("hidden");
     } else {

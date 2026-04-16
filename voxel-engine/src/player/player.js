@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { initSelector, updateRays } from './states.js';
 import { mouse } from '../core/input.js';
 import { updateInteractions } from './interactions.js';
+import { updatePlayerHealth } from './health.js';
 
 export let player;
 export let player_head;
@@ -17,7 +18,8 @@ export let player_size = {
 
 export let player_stats = {
   TOTAL_HP: 20,
-  hp: 18,
+  hp: 20,
+  dead: false,
   TOTAL_HUNGER: 20,
   hunger: 15,
   exp: 0
@@ -32,7 +34,7 @@ export function initPlayer() {
   raycaster = new THREE.Raycaster();
 
   player.add(player_head);
-  player.position.set(0, 100, 0);
+  player.position.set(0, 50, 0);
   initSelector();
 }
 
@@ -40,7 +42,15 @@ export const playerHitbox = new Hitbox(new THREE.Vector3(0.6, 1.8, 0.6), new THR
 playerHitbox.generateHitbox();
 
 export function updatePlayer() {
-  updateMovement();
-  updateRays();
-  updateInteractions();
+  if (!player_stats.dead) {
+    updateMovement();
+    updateRays();
+    updateInteractions();
+    updatePlayerHealth();
+  } else {
+    player_stats.hp = player_stats.TOTAL_HP;
+    player_stats.hunger = player_stats.TOTAL_HUNGER;
+    player.position.set(0, 50, 0);
+    player_stats.dead = false
+  }
 }
