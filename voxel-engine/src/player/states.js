@@ -4,7 +4,6 @@ import { isBlockSolid, isColliding } from './collision';
 import { keys, mouse } from '../core/input';
 import { camera, cameraNormalFOV, scene } from '../core/scene';
 import { delta } from '../core/delta';
-import { addBlock, removeBlock } from '../world/chunks';
 export let state = "walk";
 
 let point, normal;

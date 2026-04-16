@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { delta } from "../core/delta";
 import { mouse } from "../core/input";
 import { getPlaceBlock, selectedBlock } from "./states";
-import { addBlock, removeBlock } from "../world/chunks";
+import { addBlock, removeBlock } from "../world/blocks";
 import { isColliding } from "./collision";
 
 

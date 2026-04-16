@@ -32,7 +32,7 @@ export function initPlayer() {
   raycaster = new THREE.Raycaster();
 
   player.add(player_head);
-  player.position.set(0, 20, 0);
+  player.position.set(0, 100, 0);
   initSelector();
 }
 
