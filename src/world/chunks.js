@@ -34,7 +34,13 @@ export function createChunk(chunkX, chunkZ) {
 
         for (let y = 0; y < height; y++) {
           const blockKey = `${worldX},${y},${worldZ}`;
-          blocks.set(blockKey, { solid: true });
+          let type = "stone";
+          if (y == height - 1) {
+            type = "grass";
+          } else if (y >= height - SURFACE_DEPTH) {
+            type = "dirt";
+          }
+          blocks.set(blockKey, { type, solid: true });
         }
 
         for (let y = height - SURFACE_DEPTH; y < height; y++) {

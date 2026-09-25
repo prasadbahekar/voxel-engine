@@ -1,6 +1,6 @@
 import { isBlockSolid } from "../player/collision";
 import { updateRays } from "../player/states";
-import { chunks, getChunkCoord, rebuildAffectedChunks } from "./chunks";
+import { chunks, getChunkCoord, rebuildAffectedChunks, worldData } from "./chunks";
 import { rebuildChunk } from "./chunks";
 
 function updateSurfaceAt(worldX, worldY, worldZ) {
@@ -48,10 +48,10 @@ export function addBlock(worldX, worldY, worldZ) {
   if (!chunk) return;
 
   const blockKey = `${worldX},${Math.floor(worldY)},${worldZ}`;
-  chunk.blocks.set(blockKey, { solid: true });
+  chunk.blocks.set(blockKey, { solid: true, type: "grass" });
   chunk.surfaceBlocks.add(blockKey);
   const affectedChunks = updateNeighbors(worldX, worldY, worldZ);
-
+  console.log(worldData)
   rebuildAffectedChunks(affectedChunks);
 }
 

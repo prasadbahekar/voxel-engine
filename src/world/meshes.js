@@ -1,22 +1,9 @@
 import * as THREE from 'three';
+import { isBlockSolid } from "../player/collision.js";
+import { getMaterial } from './materials.js';
+
 
 const geometry = new THREE.PlaneGeometry(1, 1);
-const loader = new THREE.TextureLoader();
-loader.load('src/textures/blocks/dirt.png');
-
-import grass_top_t from '../textures/blocks/grass_top.png';
-import grass_side_t from '../textures/blocks/grass_side.png';
-import dirt_t from '../textures/blocks/dirt.png';
-import { isBlockSolid } from "../player/collision.js";
-
-const grassTop = loader.load(grass_top_t);
-const grassSide = loader.load(grass_side_t);
-const dirt = loader.load(dirt_t);
-
-[grassTop, grassSide, dirt].forEach(tex => {
-  tex.magFilter = THREE.NearestFilter;
-  tex.minFilter = THREE.NearestFilter;
-});
 
 const directions = [
   { dir: [1, 0, 0],  normal: 'right' },
@@ -27,42 +14,32 @@ const directions = [
   { dir: [0, 0, -1], normal: 'back' },
 ];
 
-const materials = [
-  new THREE.MeshStandardMaterial({ map: grassSide }),
-  new THREE.MeshStandardMaterial({ map: grassSide }),
-  new THREE.MeshStandardMaterial({ map: grassTop }),
-  new THREE.MeshStandardMaterial({ map: dirt }),
-  new THREE.MeshStandardMaterial({ map: grassSide }),
-  new THREE.MeshStandardMaterial({ map: grassSide })
-];
-
 export function buildChunkMesh(chunk) {
   const faceMeshes = {};
   const matrix = new THREE.Matrix4();
   const position = new THREE.Vector3();
   const quaternion = new THREE.Quaternion();
 
-  directions.forEach(({ normal }) => {
-    faceMeshes[normal] = new THREE.InstancedMesh(
-      geometry,
-      materials[getMaterialIndex(normal)],
-      chunk.blocks.size
-    );
-    faceMeshes[normal].count = 0;
-  });
-
   for (const blockKey of chunk.surfaceBlocks) {
-
-    const [x, y, z] = blockKey.split(',').map(Number);
+    const block = chunk.blocks.get(blockKey);
+    if (!block) continue;
+    const [x, y, z] = blockKey.split(',').map(Number); 
 
     directions.forEach(({ dir, normal }) => {
       const nx = x + dir[0];
       const ny = y + dir[1];
       const nz = z + dir[2];
 
-      if (isBlockSolid(nx, ny, nz)) return;
+      const material = getMaterial(block.type, normal)
+      const meshKey = `${block.type}_${normal}`;
 
-      const mesh = faceMeshes[normal];
+      if (!faceMeshes[meshKey]) {
+        faceMeshes[meshKey] = new THREE.InstancedMesh(geometry, material, chunk.blocks.size);
+        faceMeshes[meshKey].count = 0;
+      }
+
+      const mesh = faceMeshes[meshKey];
+
       position.set(
         x + 0.5 + dir[0] * 0.5,
         y + 0.5 + dir[1] * 0.5,
@@ -101,14 +78,5 @@ function getFaceRotation(normal) {
 
     case 'right': return new THREE.Euler(0, Math.PI / 2, 0);
     case 'left': return new THREE.Euler(0, -Math.PI / 2, 0);
-
-  }
-}
-
-function getMaterialIndex(normal) {
-  switch (normal) {
-    case 'top': return 2;
-    case 'bottom': return 3;
-    default: return 0;
   }
 }
