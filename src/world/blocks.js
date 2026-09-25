@@ -1,7 +1,8 @@
 import { isBlockSolid } from "../player/collision";
 import { updateRays } from "../player/states";
+import { blockSounds } from "../sounds/soundScenarios";
 import { chunks, getChunkCoord, rebuildAffectedChunks, worldData } from "./chunks";
-import { rebuildChunk } from "./chunks";
+import * as THREE from 'three';
 
 function updateSurfaceAt(worldX, worldY, worldZ) {
   const y = Math.floor(worldY);
@@ -62,8 +63,10 @@ export function removeBlock(worldX, worldY, worldZ) {
 
   const chunk = chunks[key];
   if (!chunk) return;
-
+  
   const blockKey = `${worldX},${Math.floor(worldY)},${worldZ}`;
+  const block = chunk.blocks.get(blockKey);
+  blockSounds(block.type, "dig", new THREE.Vector3(worldX, worldY, worldZ));
 
   chunk.blocks.delete(blockKey);
   chunk.surfaceBlocks.delete(blockKey);

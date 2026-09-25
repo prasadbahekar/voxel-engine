@@ -5,13 +5,11 @@ import { processChunkQueue, updateChunks } from './world/chunks.js';
 import { initControls } from './core/controls.js';
 import { updateTimer } from './core/delta.js';
 import { initSky } from './world/lighting.js';
-import * as THREE from 'three';
 import Stats from 'stats.js';
 import { updateVisualizationHitbox } from './player/movement.js';
 import { updateHUD } from './hud/ingame.js';
 
 const stats = new Stats();
-const pixel = new Uint8Array(4);
 document.body.appendChild(stats.dom);
 
 initScene();

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { ticks } from './delta';
 import { updateSun } from '../world/lighting';
+import { initSounds } from '../sounds/soundPlayer';
 
 export const cameraNormalFOV = 75;
 export let scene, camera, renderer;
@@ -13,11 +14,10 @@ export function initScene() {
   scene = new THREE.Scene();
 
   camera = new THREE.PerspectiveCamera(cameraNormalFOV, window.innerWidth / window.innerHeight, 0.1, 1000);
-
   renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
-  
+  initSounds(camera);
 }
 
 export function updateSky () {
