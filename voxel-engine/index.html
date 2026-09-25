@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Engine</title>
+    <link rel="stylesheet" href="./styles/style.css">
+</head>
+<body>
+    <div id="stats">
+        Blocks: <span id="blocks">0</span><br>
+        <span id="cords">0 0 0</span><br>
+        Debug: <span id="fr">0 0</span><br>
+    </div>
+    <div id="crosshair"></div>
+    <div id="bottom-hud">
+        <div id="hh-container">
+            <div id="health-bar">
+                <!-- <div class="heart">
+                    <img src="https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.11/assets/minecraft/textures/gui/sprites/hud/heart/container.png" alt="">
+                    <img src="https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.11/assets/minecraft/textures/gui/sprites/hud/heart/full.png" alt="">
+                </div>
+                <div class="heart">
+                    <img src="https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.11/assets/minecraft/textures/gui/sprites/hud/heart/container.png" alt="">
+                    <img src="https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.21.11/assets/minecraft/textures/gui/sprites/hud/heart/full.png" alt="">
+                </div> -->
+            </div>
+            <div id="hunger-bar">
+            </div>
+        </div>
+        <div id="experience-bar">
+            <img src="./src/textures/hud/experience_bar_background.png" alt="" srcset="">
+            <div id="exp-mask">
+                <img id="exp-selection" src="./src/textures/hud/experience_bar_progress.png" alt="" srcset="">
+            </div>
+        </div>
+        <div id="hotbar">
+            <div id="hot-selection">
+                <img src="./src/textures/hud/hotbar_selection.png" alt="" srcset="">
+            </div>
+            <img src="./src/textures/hud/hotbar.png" alt="">
+        </div>
+    </div>
+    <script src="./src/main.js" type="module"></script>
+</body>
+</html>
