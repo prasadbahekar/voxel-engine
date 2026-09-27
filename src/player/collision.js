@@ -34,6 +34,26 @@ export function isOnGround() {
   return false;
 }
 
+export function getBlockBelowPlayer() {
+    const EPSILON = 0.05;
+  const x = player.position.x
+  const y = player.position.y - EPSILON
+  const z = player.position.z
+  const half = player_size.width / 2;
+
+  return getWorldBlock(x, y, z);
+}
+
+export function getWorldBlock(x, y, z) {
+  const bx = Math.floor(x);
+  const by = Math.floor(y);
+  const bz = Math.floor(z);
+
+  const chunk = chunks[`${getChunkCoord(bx)},${getChunkCoord(bz)}`];
+  if (!chunk) return null;
+  return chunk.blocks.get(`${bx},${by},${bz}`);
+}
+
 export function isBlockSolid(x, y, z) {
   const EPS = 0.0001;
 

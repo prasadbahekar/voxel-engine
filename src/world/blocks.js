@@ -52,7 +52,6 @@ export function addBlock(worldX, worldY, worldZ) {
   chunk.blocks.set(blockKey, { solid: true, type: "grass" });
   chunk.surfaceBlocks.add(blockKey);
   const affectedChunks = updateNeighbors(worldX, worldY, worldZ);
-  console.log(worldData)
   rebuildAffectedChunks(affectedChunks);
 }
 

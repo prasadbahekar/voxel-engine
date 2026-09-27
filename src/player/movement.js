@@ -1,4 +1,4 @@
-import { isOnGround, isColliding } from './collision.js';
+import { isOnGround, isColliding, getBlockBelowPlayer } from './collision.js';
 import * as THREE from 'three';
 import { camera, cameraNormalFOV, scene} from '../core/scene.js';
 import { keys } from '../core/input.js';
@@ -6,6 +6,7 @@ import { controls } from '../core/controls.js';
 import { delta, ticks } from '../core/delta.js';
 import { player, playerHitbox } from './player.js';
 import { updateState, state, speed } from './states.js';
+import { blockSounds } from '../sounds/soundScenarios.js';
 
 const velocity = new THREE.Vector3();
 
@@ -15,6 +16,9 @@ const FRICTION = 10;
 const gravity = -19;      
 const jumpForce = 6.5;      
 const stepSize = 0.1;
+
+const WALK_SOUND_DELAY = 0.36;
+let walkSoundCooldown = 0;
 
 const hitboxVisualizationOffset = new THREE.Vector3(0, 0, 0);
 const hitboxMeshes = [];
@@ -83,9 +87,6 @@ export function updateMovement() {
     moveZ = (moveZ / len) * speed;
   }
 
-  // velocity.x += moveX;
-  // velocity.z += moveZ;
-
   let targetVelX = moveX;
   let targetVelZ = moveZ;
 
@@ -99,8 +100,10 @@ export function updateMovement() {
 
   if (Math.abs(velocity.x) < 0.01) velocity.x = 0;
   if (Math.abs(velocity.z) < 0.01) velocity.z = 0;
-
   velocity.y += gravity * delta;
+
+  const sprintMultiplier = state == "sprint" ? 1.2 : 1;
+  walkSoundCooldown -= delta * sprintMultiplier;
 
   if (isOnGround()) {
     if (velocity.y < 0) velocity.y = 0;
@@ -116,7 +119,15 @@ export function updateMovement() {
     velocity.z * delta
   );
 
-  move(frameVelocity);
+  const hasWalked = move(frameVelocity);
+  
+  if (isOnGround()) {
+    const blockBelowPlayer = getBlockBelowPlayer();
+    if ( hasWalked && blockBelowPlayer && walkSoundCooldown <= 0 && state != "crouch") {
+      blockSounds(blockBelowPlayer.type, "hit", new THREE.Vector3(blockBelowPlayer.x, blockBelowPlayer.y, blockBelowPlayer.z), 0.2);
+      walkSoundCooldown = WALK_SOUND_DELAY;
+    }
+  }
 
   document.getElementById("cords").textContent =
     `${player.position.x.toFixed(2)} ${player.position.y.toFixed(2)} ${player.position.z.toFixed(2)}`;
@@ -124,6 +135,8 @@ export function updateMovement() {
 
 function move(v) {
   const pos = player.position;
+  const startX = pos.x;
+  const startZ = pos.z;
 
   let dist = v.length();
   let steps = Math.max(1, Math.ceil(dist / stepSize));
@@ -156,4 +169,9 @@ function move(v) {
     if (state == "crouch" && isGround && !isOnGround()) pos.z -= dz;
     
   }
+
+  return (
+    Math.abs(pos.x - startX) > 0.001 ||
+    Math.abs(pos.z - startZ) > 0.001
+  );
 }

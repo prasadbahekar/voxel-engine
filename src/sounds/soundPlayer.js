@@ -6,16 +6,23 @@ export const soundBuffers = {};
 
 export function initSounds(camera) {
     camera.add(listener);
-    loadSound('grassDig1', '/voxel-engine/sounds/dig/grass1.ogg');
-    loadSound('grassDig2', '/voxel-engine/sounds/dig/grass2.ogg');
-    loadSound('grassDig3', '/voxel-engine/sounds/dig/grass3.ogg');
-    loadSound('grassDig4', '/voxel-engine/sounds/dig/grass4.ogg');
-    loadSound('grassMining1', '/voxel-engine/sounds/mining/grass1.ogg');
-    loadSound('grassMining2', '/voxel-engine/sounds/mining/grass2.ogg');
-    loadSound('grassMining3', '/voxel-engine/sounds/mining/grass3.ogg');
-    loadSound('grassMining4', '/voxel-engine/sounds/mining/grass4.ogg');
-    loadSound('grassMining5', '/voxel-engine/sounds/mining/grass5.ogg');
-    loadSound('grassMining6', '/voxel-engine/sounds/mining/grass6.ogg');
+    loadSounds('grassDig', '/voxel-engine/sounds/dig/grass', 4);
+    loadSounds('grassMining', '/voxel-engine/sounds/mining/grass', 6);
+    loadSounds('grassHit', '/voxel-engine/sounds/hit/grass', 6);
+
+    loadSounds('gravelDig', '/voxel-engine/sounds/dig/gravel', 4);
+    loadSounds('gravelMining', '/voxel-engine/sounds/mining/gravel', 4);
+    loadSounds('gravelHit', '/voxel-engine/sounds/hit/gravel', 4);
+
+    loadSounds('stoneDig', '/voxel-engine/sounds/dig/stone', 4);
+    loadSounds('stoneMining', '/voxel-engine/sounds/mining/stone', 6);
+    loadSounds('stoneHit', '/voxel-engine/sounds/hit/stone', 6);
+}
+
+function loadSounds(name, path, count) {
+    for (let i = 0; i <= count; i++) {
+        loadSound(`${name}${i}`, `${path}${i}.ogg`);
+    }
 }
 
 function loadSound(name, path) {
