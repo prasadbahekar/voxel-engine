@@ -2,7 +2,7 @@ import { camera } from '../core/scene.js';
 import { Hitbox } from '../models/hitbox.js';
 import { updateMovement } from './movement.js';
 import * as THREE from 'three';
-import { initSelector, updateRays } from './states.js';
+import { initBreakingSelector, initSelector, updateRays } from './states.js';
 import { mouse } from '../core/input.js';
 import { updateInteractions } from './interactions.js';
 import { updatePlayerHealth } from './health.js';
@@ -36,6 +36,7 @@ export function initPlayer() {
   player.add(player_head);
   player.position.set(0, 50, 0);
   initSelector();
+  initBreakingSelector();
 }
 
 export const playerHitbox = new Hitbox(new THREE.Vector3(0.6, 1.8, 0.6), new THREE.Vector3(1, 4, 1));

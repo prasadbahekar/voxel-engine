@@ -4,14 +4,38 @@ import { isBlockSolid, isColliding } from './collision';
 import { keys, mouse } from '../core/input';
 import { camera, cameraNormalFOV, scene } from '../core/scene';
 import { delta } from '../core/delta';
+import { textureLevel } from 'three/tsl';
 export let state = "walk";
 
-let point, normal;
+import destroyStage1 from '../textures/blocks/destroy_stage_1.png';
+import destroyStage0 from '../textures/blocks/destroy_stage_0.png';
+import destroyStage2 from '../textures/blocks/destroy_stage_2.png';
+import destroyStage3 from '../textures/blocks/destroy_stage_3.png';
+import destroyStage4 from '../textures/blocks/destroy_stage_4.png';
+import destroyStage5 from '../textures/blocks/destroy_stage_5.png';
+import destroyStage6 from '../textures/blocks/destroy_stage_6.png';
+import destroyStage7 from '../textures/blocks/destroy_stage_7.png';
+import destroyStage8 from '../textures/blocks/destroy_stage_8.png';
+import destroyStage9 from '../textures/blocks/destroy_stage_9.png';
 
-let targetHeight = 1.6;
+const destroyStages = [
+    destroyStage0,
+    destroyStage1,
+    destroyStage2,
+    destroyStage3,
+    destroyStage4,
+    destroyStage5,
+    destroyStage6,
+    destroyStage7,
+    destroyStage8,
+    destroyStage9,
+];
+
+let normal;
+let point;
+
 const STAND_HEIGHT = 1.6;
 const CROUCH_HEIGHT = 1.3;
-let crouchLerpY = 0;
 export let currentHeight = STAND_HEIGHT;
 
 const WALK_SPEED = 4.317;
@@ -22,20 +46,57 @@ export let speed = WALK_SPEED;
 let outlineCube;
 export let selectedBlock = new THREE.Vector3(0, 0, 0); 
 
+let breakingCube;
+let breakingMaterials = [];
+let breakingTextures = [];
+
 // ! ~ Inits ~ ! //
 export function initSelector() {
-  const outlineGeometry = new THREE.BoxGeometry(1.01, 1.01, 1.01);
-  const outlineMaterial = new THREE.MeshBasicMaterial({
+  const outlineGeometry = new THREE.EdgesGeometry( new THREE.BoxGeometry(1.01, 1.01, 1.01) );
+  const outlineMaterial = new THREE.LineBasicMaterial({
     color: 0x000000,
-    wireframe: true,
-    opacity: 0.5,
+    opacity: 0.8,
     transparent: true,
+    depthTest: true,
   });
 
-  outlineCube = new THREE.Mesh(outlineGeometry, outlineMaterial);
+  outlineCube = new THREE.LineSegments(outlineGeometry, outlineMaterial);
   outlineCube.visible = false;
 
   scene.add(outlineCube);
+}
+
+export function initBreakingSelector() {
+    const loader = new THREE.TextureLoader();
+    destroyStages.forEach((path, i) => {
+        loader.load(path, (texture) => {
+            texture.magFilter = THREE.NearestFilter;
+            texture.minFilter = THREE.NearestFilter;
+            texture.generateMipmaps = false;
+            texture.colorSpace = THREE.SRGBColorSpace;
+            breakingTextures[i] = texture;
+          }
+        );
+    });
+
+    breakingMaterials = Array.from({ length: 6 }, () => {
+        return new THREE.MeshBasicMaterial({
+          transparent: true,
+          opacity: 0.7,
+          depthWrite: false,
+          depthTest: true,
+          side: THREE.DoubleSide,
+          alphaTest: 0,
+          blending: THREE.NormalBlending,
+          toneMapped: false
+        });
+    });
+
+    const geometry = new THREE.BoxGeometry(1.002, 1.002, 1.002);
+
+    breakingCube = new THREE.Mesh(geometry, breakingMaterials);
+    breakingCube.visible = false;
+    scene.add(breakingCube);
 }
 
 
@@ -129,6 +190,25 @@ export function updateRays() {
     outlineCube.visible = false;
     selectedBlock = null;
   }
+}
+
+export function updateBreakingSelector(progress) {
+
+    if (!breakingCube || !selectedBlock || progress <= 0) {
+        if (breakingCube) breakingCube.visible = false;
+        return;
+    }
+
+    const stage = Math.min(9, Math.floor(progress * 10));
+    const texture = breakingTextures[stage];
+
+    for (const material of breakingMaterials) {
+        material.map = texture;
+        material.needsUpdate = true;
+    }
+
+    breakingCube.position.set(selectedBlock.x + 0.5, selectedBlock.y + 0.5, selectedBlock.z + 0.5);
+    breakingCube.visible = true;
 }
 
 function raycastVoxel(origin, direction, maxDistance) {

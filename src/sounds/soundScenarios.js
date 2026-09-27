@@ -9,7 +9,6 @@ export function blockSounds(type, category, position, volume = 1) {
     let buffer;
 
     if (type == "grass" && category == "dig") {
-        console.log(position)
         buffer = soundBuffers[getRandom(soundList("grassDig", 4))];
     } else if (type == "grass" && category == "mining") {
         buffer = soundBuffers[getRandom(soundList("grassMining", 6))];
